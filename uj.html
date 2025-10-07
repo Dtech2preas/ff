@@ -1,0 +1,3840 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTECH | UJ Course Eligibility Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e6f0fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .logo-container {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .logo-container img {
+      height: 100px;
+    }
+    header {
+      background-color: #00509e;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+    }
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: white;
+      border: 1px solid #cce0f5;
+      border-radius: 8px;
+      flex-grow: 1;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #003366;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #aac8f0;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #0073e6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #dfefff;
+      border: 1px solid #0073e6;
+      border-radius: 4px;
+    }
+    footer {
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+    #supportBtn {
+  position: fixed;
+  top: 12px;
+  right: 0;
+  width: 25%;
+  max-width: 180px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: #ff3b3f;
+  color: white;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  z-index: 1000;
+  text-align: center;
+  box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.2);
+}
+#supportBtn:hover {
+  background-color: #d62c30;
+}
+    #noticeBox {
+      text-align: center;
+      color: red;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body><button id="supportBtn" onclick="window.open(adUrl, '_blank')">Support</button>
+
+  <div class="logo-container">
+    <img src="logo.png" alt="DTECH Logo" />
+  </div>  <main>
+    <h2>UJ Course Eligibility Checker</h2><div id="noticeBox"></div>
+
+<label for="course">Choose a course:</label>
+<select id="course"></select>
+
+<label for="aps">Enter your APS:</label>
+<input type="number" id="aps" min="0" max="50" />
+
+<div id="subjectsContainer"></div>
+
+<button id="eligibilityBtn" onclick="handleButtonClick('eligibilityBtn', checkEligibility)">Check Eligibility</button>
+<button id="jobsBtn" onclick="handleButtonClick('jobsBtn', showJobs)">Show Related Jobs</button>
+
+<div class="result" id="resultBox"></div>
+<div class="result" id="jobsBox"></div>
+
+  </main>  <footer>
+    &copy; 2025 DTECH | Developed and Owned by Preasx24. All rights reserved.
+  </footer>  <script>
+        const adUrl = 'https://conductorhimselfwhipped.com/spymr251ew?key=ce76edf7e5c6e4907177e712dc143365';
+    const courses = [
+  {
+    "name": "B ARCHITECTURE",
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60
+    },
+    "minAPS": 30,
+    "jobs": ["Architect", "Urban Planner", "Interior Designer"]
+  },
+  {
+    "name": "BA COMMUNICATION DESIGN",
+    "requirements": {
+      "English": 60,
+      "Mathematics": 40
+    },
+    "minAPS": 26,
+    "jobs": ["Graphic Designer", "Creative Director", "Illustrator"]
+  },
+  {
+    "name": "BA COMMUNICATION DESIGN math lite",
+    "requirements": {
+      "English": 60,
+      "Mathematical Literacy": 50
+    },
+    "minAPS": 26,
+    "jobs": ["Brand Strategist", "UX Designer", "Advertising Specialist"]
+  },
+  {
+    "name": "BA DIGITAL MEDIA DESIGN",
+    "requirements": {
+      "English": 60,
+      "Mathematics": 40
+    },
+    "minAPS": 25,
+    "jobs": ["Multimedia Artist", "Web Designer", "Animator"]
+  },
+  {
+    "name": "BA DIGITAL MEDIA DESIGN math lite",
+    "requirements": {
+      "English": 60,
+      "Mathematical Literacy": 50
+    },
+    "minAPS": 26,
+    "jobs": ["Video Editor", "Content Creator", "Digital Marketer"]
+  },
+  {
+    "name": "BA INDUSTRIAL DESIGN",
+    "requirements": {
+      "English": 60,
+      "Mathematics": 40
+    },
+    "minAPS": 25,
+    "jobs": ["Product Designer", "CAD Specialist", "User Experience Engineer"]
+  },
+  {
+    "name": "BA INDUSTRIAL DESIGN math lite",
+    "requirements": {
+      "English": 60,
+      "Mathematical Literacy": 50
+    },
+    "minAPS": 26,
+    "jobs": ["Furniture Designer", "Design Consultant", "Technical Illustrator"]
+  },
+  {
+    "name": "BA INTERIOR DESIGN mathematics",
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50
+    },
+    "minAPS": 25,
+    "jobs": ["Interior Designer", "Space Planner", "Design Technologist"]
+  },
+  {
+    "name": "BA INTERIOR DESIGN mathematical literacy",
+    "requirements": {
+      "English": 60,
+      "Mathematical Literacy": 60
+    },
+    "minAPS": 26,
+    "jobs": ["Interior Designer", "Space Planner", "Design Technologist"]
+  },
+  {
+    "name": "BA FASHION DESIGN mathematics",
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50
+    },
+    "minAPS": 25,
+    "jobs": ["Fashion Designer", "Fashion Entrepreneur", "Pattern Engineer", "Fashion Buyer", "Fashion Stylist"]
+  },
+  {
+    "name": "BA FASHION DESIGN mathematical literacy",
+    "requirements": {
+      "English": 60,
+      "Mathematical Literacy": 60
+    },
+    "minAPS": 26,
+    "jobs": ["Fashion Designer", "Fashion Entrepreneur", "Pattern Engineer", "Fashion Buyer", "Fashion Stylist"]
+  },
+  {
+    "name": "BA VISUAL ART mathematics",
+    "requirements": {
+      "English": 50,
+      "Mathematics": 50
+    },
+    "minAPS": 25,
+    "jobs": ["Visual Artist", "Art Educator", "Gallery Curator", "Art Consultant", "Art Critic", "Printmaker", "Art Journalist"]
+  },
+  {
+    "name": "BA VISUAL ART technical mathematics",
+    "requirements": {
+      "English": 50,
+      "Technical Mathematics": 50
+    },
+    "minAPS": 25,
+    "jobs": ["Visual Artist", "Art Educator", "Gallery Curator", "Art Consultant", "Art Critic", "Printmaker", "Art Journalist"]
+  },
+  {
+    "name": "BA VISUAL ART mathematical literacy",
+    "requirements": {
+      "English": 50,
+      "Mathematical Literacy": 60
+    },
+    "minAPS": 26,
+    "jobs": ["Visual Artist", "Art Educator", "Gallery Curator", "Art Consultant", "Art Critic", "Printmaker", "Art Journalist"]
+  },
+{
+    name: "ARCHITECTURE mathematics",
+    code: "D8AT1Q",
+    minAPS: 25,
+    requirements: {
+      English: 60,
+      Mathematics: 60
+    },
+    jobs: ["Architectural Practitioner"]
+  },
+  {
+    name: "ARCHITECTURE technical mathematics",
+    code: "D8AT1Q",
+    minAPS: 26,
+    requirements: {
+      English: 60,
+      "Technical Mathematics": 60
+    },
+    jobs: ["Architectural Practitioner"]
+  },
+  {
+    name: "FASHION PRODUCTION mathematics",
+    code: "D8FP1Q",
+    minAPS: 22,
+    requirements: {
+      English: 60,
+      Mathematics: 40
+    },
+    jobs: [
+      "Fashion Manufacturer",
+      "Fashion Retail Specialist",
+      "Quality Assurance Officer"
+    ]
+  },
+  {
+    name: "FASHION PRODUCTION mathematical literacy",
+    code: "D8FP1Q",
+    minAPS: 23,
+    requirements: {
+      English: 60,
+      "Mathematical Literacy": 50
+    },
+    jobs: [
+      "Fashion Manufacturer",
+      "Fashion Retail Specialist",
+      "Quality Assurance Officer"
+    ]
+  },
+  {
+    name: "JEWELLERY DESIGN AND MANUFACTURE mathematics",
+    code: "D8JD1Q",
+    minAPS: 20,
+    requirements: {
+      English: 60,
+      Mathematics: 40
+    },
+    jobs: [
+      "Jewellery Designer",
+      "Jewellery Manufacturer"
+    ]
+  },
+  {
+    name: "JEWELLERY DESIGN AND MANUFACTURE mathematical literacy",
+    code: "D8JD1Q",
+    minAPS: 21,
+    requirements: {
+      English: 60,
+      "Mathematical Literacy": 50
+    },
+    jobs: [
+      "Jewellery Designer",
+      "Jewellery Manufacturer"
+    ]
+  },
+  {
+    name: "JEWELLERY DESIGN AND MANUFACTURE technical mathematics",
+    code: "D8JD1Q",
+    minAPS: 22,
+    requirements: {
+      English: 60,
+      "Technical Mathematics": 60
+    },
+    jobs: [
+      "Jewellery Designer",
+      "Jewellery Manufacturer"
+    ]
+  },
+  {
+    name: "Bachelor of Accounting (CA)",
+    code: "B34CAQ",
+    minAPS: 33,
+    requirements: {
+      English: 50,
+      Mathematics: 60
+    },
+    jobs: ["Chartered Accountant – CA (SA)"]
+  },
+  {
+    name: "Bachelor of Hospitality Management (mathematics)",
+    code: "B34HNQ",
+    minAPS: 26,
+    requirements: {
+      English: 60,
+      Mathematics: 50
+    },
+    jobs: ["General Manager", "Financial Manager"]
+  },
+  {
+    name: "Bachelor of Hospitality Management (mathematical literacy)",
+    code: "B34HNQ",
+    minAPS: 28,
+    requirements: {
+      English: 60,
+      "Mathematical Literacy": 50
+    },
+    jobs: ["General Manager", "Financial Manager"]
+  },
+  {
+    name: "Bachelor of Human Resource Management (mathematics)",
+    code: "B34HRQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["HR Practitioner", "Training Manager"]
+  },
+  {
+    name: "Bachelor of Human Resource Management (mathematical literacy)",
+    code: "B34HRQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 50
+    },
+    jobs: ["HR Practitioner", "Training Manager"]
+  },
+  {
+    name: "Bachelor of Tourism Development and Management (mathematics)",
+    code: "B34TDQ",
+    minAPS: 26,
+    requirements: {
+      English: 60,
+      Mathematics: 40
+    },
+    jobs: ["Tour Guide", "Tour Operator"]
+  },
+  {
+    name: "Bachelor of Tourism Development and Management (mathematical literacy)",
+    code: "B34TDQ",
+    minAPS: 28,
+    requirements: {
+      English: 60,
+      "Mathematical Literacy": 40
+    },
+    jobs: ["Tour Guide", "Tour Operator"]
+  },
+  {
+    name: "Bachelor of Public Management and Governance (mathematics)",
+    code: "B34PKQ",
+    minAPS: 26,
+    requirements: {
+      English: 60,
+      Mathematics: 40
+    },
+    jobs: ["Public Manager"]
+  },
+  {
+    name: "Bachelor of Public Management and Governance (mathematical literacy)",
+    code: "B34PKQ",
+    minAPS: 28,
+    requirements: {
+      English: 60,
+      "Mathematical Literacy": 40
+    },
+    jobs: ["Public Manager"]
+  },
+  {
+    name: "Bachelor of Commerce in Accounting",
+    code: "B34A5Q",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["Financial Manager", "Accountant"]
+  },
+  {
+    name: "Bachelor of Commerce in Business Management",
+    code: "B34BMQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["Business Innovator", "General Manager"]
+  },
+  {
+    name: "Bachelor of Commerce in Economics and Econometrics",
+    code: "B3N14Q",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["Economist", "Economic Analyst"]
+  },
+  {
+    name: "Bachelor of Commerce in Entrepreneurial Management",
+    code: "B1CEMQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["Business Owner", "Consultant"]
+  },
+  {
+    name: "Bachelor of Commerce in Finance",
+    code: "B34F5Q",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["Financial Manager", "Investment Advisor"]
+  },
+  {
+    name: "Bachelor of Industrial Psychology (mathematics)",
+    code: "B34INQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: ["HR Specialist"]
+  },
+  {
+    name: "Bachelor of Industrial Psychology (mathematical literacy)",
+    code: "B34INQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 50
+    },
+    jobs: ["HR Specialist"]
+  },
+{
+    name: "Bachelor of INFORMATION MANAGEMENT mathematical literacy",
+    code: "B34IMQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 70
+    },
+    jobs: [
+      "Information Manager",
+      "Knowledge Manager",
+      "Researcher",
+      "Competitive Intelligence Officer",
+      "Records Manager"
+    ]
+  },
+  {
+    name: "Bachelor of INFORMATION SYSTEMS",
+    code: "B1CISQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: [
+      "IT Project Manager",
+      "Business Analyst",
+      "IT Manager",
+      "Business Intelligence Expert",
+      "Chief Information Officer",
+      "Database Administrator",
+      "Systems Analyst",
+      "IT Consultant"
+    ]
+  },
+  {
+    name: "Bachelor of MARKETING MANAGEMENT",
+    code: "B1CMMQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      Mathematics: 50
+    },
+    jobs: [
+      "Advertising Manager",
+      "Brand Manager",
+      "Customer Relationship Manager",
+      "Marketing Manager",
+      "Marketing Researcher",
+      "Customer Services Manager",
+      "Marketing Consultant",
+      "Media Planner",
+      "Sales Manager"
+    ]
+  },
+  {
+    name: "Bachelor of TRANSPORT AND LOGISTICS MANAGEMENT",
+    code: "B34TLQ",
+    minAPS: 27,
+    requirements: {
+      English: 60,
+      Mathematics: 50
+    },
+    jobs: [
+      "Logistics Manager",
+      "Consultant",
+      "Production Manager"
+    ]
+  },
+{
+    name: "Extended Bachelor of ACCOUNTING mathematics",
+    code: "B34AEQ",
+    minAPS: 25,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Financial Manager",
+      "Accountant",
+      "Internal Auditor",
+      "Tax Consultant"
+    ]
+  },
+  {
+    name: "Extended Bachelor of ACCOUNTING mathematical literacy",
+    code: "B34AEQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 70
+    },
+    jobs: [
+      "Financial Manager",
+      "Accountant",
+      "Internal Auditor",
+      "Tax Consultant"
+    ]
+  },
+  {
+    name: "Extended Bachelor of BUSINESS MANAGEMENT mathematics/technical mathematics",
+    code: "B34BEQ",
+    minAPS: 25,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Training Manager",
+      "HRD Manager",
+      "Employment Relations Manager",
+      "Product Development Manager",
+      "Branch Manager",
+      "General Manager",
+      "Change Facilitator",
+      "Management Consultant",
+      "Entrepreneur",
+      "Business Innovator"
+    ]
+  },
+  {
+    name: "Extended Bachelor of BUSINESS MANAGEMENT mathematical literacy",
+    code: "B34BEQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 70
+    },
+    jobs: [
+      "Training Manager",
+      "HRD Manager",
+      "Employment Relations Manager",
+      "Product Development Manager",
+      "Branch Manager",
+      "General Manager",
+      "Change Facilitator",
+      "Management Consultant",
+      "Entrepreneur",
+      "Business Innovator"
+    ]
+  },
+  {
+    name: "Extended Bachelor of ECONOMICS AND ECONOMETRICS mathematics",
+    code: "B3NE4Q",
+    minAPS: 25,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Economist",
+      "Econometrician",
+      "Economic Analyst",
+      "Forecaster",
+      "Economic Planner"
+    ]
+  },
+  {
+    name: "Extended Bachelor of ECONOMICS AND ECONOMETRICS mathematical literacy",
+    code: "B3NE4Q",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 70
+    },
+    jobs: [
+      "Economist",
+      "Econometrician",
+      "Economic Analyst",
+      "Forecaster",
+      "Economic Planner"
+    ]
+  },
+  {
+    name: "Extended Bachelor of FINANCE mathematics",
+    code: "B34FEQ",
+    minAPS: 25,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Financial Manager",
+      "Stockbroker",
+      "Accountant",
+      "Financial Consultant",
+      "Investment Advisor"
+    ]
+  },
+  {
+    name: "Extended Bachelor of FINANCE mathematical literacy",
+    code: "B34FEQ",
+    minAPS: 28,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 70
+    },
+    jobs: [
+      "Financial Manager",
+      "Stockbroker",
+      "Accountant",
+      "Financial Consultant",
+      "Investment Advisor"
+    ]
+  },
+{
+    name: "Diploma in ACCOUNTANCY mathematics/technical mathematics",
+    code: "D3A15Q",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Accounting Technician",
+      "Bookkeeper",
+      "Cost Accountant"
+    ]
+  },
+  {
+    name: "Diploma in ACCOUNTANCY mathematical literacy",
+    code: "D3A15Q",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Accounting Technician",
+      "Bookkeeper",
+      "Cost Accountant"
+    ]
+  },
+  {
+    name: "Diploma in BUSINESS INFORMATION TECHNOLOGY mathematics/technical mathematics",
+    code: "DI1401",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "IT Practitioner"
+    ]
+  },
+  {
+    name: "Diploma in BUSINESS INFORMATION TECHNOLOGY mathematical literacy",
+    code: "DI1401",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 70
+    },
+    jobs: [
+      "IT Practitioner"
+    ]
+  },
+  {
+    name: "Diploma in FINANCIAL SERVICES OPERATIONS mathematics/technical mathematics",
+    code: "D34F9Q",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Financial Operations Administrator",
+      "Operations Analyst",
+      "Risk and Compliance Officer"
+    ]
+  },
+  {
+    name: "Diploma in FINANCIAL SERVICES OPERATIONS mathematical literacy",
+    code: "D34F9Q",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Financial Operations Administrator",
+      "Operations Analyst",
+      "Risk and Compliance Officer"
+    ]
+  },
+  {
+    name: "Diploma in FOOD AND BEVERAGE OPERATIONS mathematics/technical mathematics",
+    code: "D34FBQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Food and Beverage Unit Worker",
+      "Executive Catering",
+      "Marketing and Promotions",
+      "Training",
+      "Food and Drinks Industry Roles"
+    ]
+  },
+  {
+    name: "Diploma in FOOD AND BEVERAGE OPERATIONS mathematical literacy",
+    code: "D34FBQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Food and Beverage Unit Worker",
+      "Executive Catering",
+      "Marketing and Promotions",
+      "Training",
+      "Food and Drinks Industry Roles"
+    ]
+  },
+  {
+    name: "Diploma in LOGISTICS mathematics/technical mathematics",
+    code: "D34LGQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Purchasing Manager",
+      "Warehouse Manager"
+    ]
+  },
+  {
+    name: "Diploma in LOGISTICS mathematical literacy",
+    code: "D34LGQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Purchasing Manager",
+      "Warehouse Manager"
+    ]
+  },
+  {
+    name: "Diploma in MARKETING mathematics/technical mathematics",
+    code: "D34MKQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Advertising",
+      "Brand Management",
+      "Customer Relationship Manager",
+      "Marketing Manager",
+      "Marketing Researcher",
+      "Customer Services",
+      "Marketing Consultant",
+      "Media Planner",
+      "Sales Manager"
+    ]
+  },
+  {
+    name: "Diploma in MARKETING mathematical literacy",
+    code: "D34MKQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Advertising",
+      "Brand Management",
+      "Customer Relationship Manager",
+      "Marketing Manager",
+      "Marketing Researcher",
+      "Customer Services",
+      "Marketing Consultant",
+      "Media Planner",
+      "Sales Manager"
+    ]
+  },
+  {
+    name: "Diploma in PEOPLE MANAGEMENT mathematics/technical mathematics",
+    code: "D34P2Q",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Human Resource Officer",
+      "Employee Benefits Officer",
+      "Health and Wellness Official",
+      "Recruitment and Selection Official",
+      "HR Researcher",
+      "Training and Development Officer",
+      "Change Facilitator"
+    ]
+  },
+  {
+    name: "Diploma in PEOPLE MANAGEMENT mathematical literacy",
+    code: "D34P2Q",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Human Resource Officer",
+      "Employee Benefits Officer",
+      "Health and Wellness Official",
+      "Recruitment and Selection Official",
+      "HR Researcher",
+      "Training and Development Officer",
+      "Change Facilitator"
+    ]
+  },
+  {
+    name: "Diploma in RETAIL BUSINESS MANAGEMENT mathematics/technical mathematics",
+    code: "D34RMQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Buyer",
+      "Store Manager",
+      "Layout Specialist",
+      "Visual Merchandiser",
+      "Product Category Manager",
+      "Sales Manager",
+      "Service Retailer",
+      "Advertising and Sales Promoter",
+      "Customer Experience Leader",
+      "Customer Analyst",
+      "Retail Software Developer",
+      "Business Owner"
+    ]
+  },
+  {
+    name: "Diploma in RETAIL BUSINESS MANAGEMENT mathematical literacy",
+    code: "D34RMQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Buyer",
+      "Store Manager",
+      "Layout Specialist",
+      "Visual Merchandiser",
+      "Product Category Manager",
+      "Sales Manager",
+      "Service Retailer",
+      "Advertising and Sales Promoter",
+      "Customer Experience Leader",
+      "Customer Analyst",
+      "Retail Software Developer",
+      "Business Owner"
+    ]
+  },
+  {
+    name: "Diploma in SMALL BUSINESS MANAGEMENT mathematics/technical mathematics",
+    code: "D34SBQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Entrepreneur",
+      "Business Owner",
+      "Business Advisor",
+      "Business Manager",
+      "Social Entrepreneur"
+    ]
+  },
+  {
+    name: "Diploma in SMALL BUSINESS MANAGEMENT mathematical literacy",
+    code: "D34SBQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Entrepreneur",
+      "Business Owner",
+      "Business Advisor",
+      "Business Manager",
+      "Social Entrepreneur"
+    ]
+  },
+  {
+    name: "Diploma in TOURISM MANAGEMENT mathematics/technical mathematics",
+    code: "D34TMQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Tourism Industry Professional (Various Sectors)"
+    ]
+  },
+  {
+    name: "Diploma in TOURISM MANAGEMENT mathematical literacy",
+    code: "D34TMQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Tourism Industry Professional (Various Sectors)"
+    ]
+  },
+  {
+    name: "Diploma in TRANSPORTATION MANAGEMENT mathematics/technical mathematics",
+    code: "D34TRQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Transportation Manager"
+    ]
+  },
+  {
+    name: "Diploma in TRANSPORTATION MANAGEMENT mathematical literacy",
+    code: "D34TRQ",
+    minAPS: 26,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: [
+      "Transportation Manager"
+    ]
+  },
+{
+    name: "Extended Diploma in TRANSPORTATION MANAGEMENT mathematics/technical mathematics",
+    code: "D34TEQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: ["Transportation Manager"]
+  },
+  {
+    name: "Extended Diploma in TRANSPORTATION MANAGEMENT mathematical literacy",
+    code: "D34TEQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: ["Transportation Manager"]
+  },
+  {
+    name: "Extended Diploma in LOGISTICS mathematics/technical mathematics",
+    code: "D34LEQ",
+    minAPS: 22,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: ["Purchasing Manager", "Warehouse Manager"]
+  },
+  {
+    name: "Extended Diploma in LOGISTICS mathematical literacy",
+    code: "D34LEQ",
+    minAPS: 24,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 60
+    },
+    jobs: ["Purchasing Manager", "Warehouse Manager"]
+  },
+  {
+    name: "Extended Diploma in PEOPLE MANAGEMENT mathematics/technical mathematics",
+    code: "D34PEQ",
+    minAPS: 19,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Human Resource Officer",
+      "Employee Benefits Officer",
+      "Health and Wellness Official",
+      "Recruitment and Selection Official",
+      "Human Resource Researcher",
+      "Training and Development Officer",
+      "Change Facilitator",
+      "Organisational Development Practitioner"
+    ]
+  },
+  {
+    name: "Extended Diploma in PEOPLE MANAGEMENT mathematical literacy",
+    code: "D34PEQ",
+    minAPS: 21,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 50
+    },
+    jobs: [
+      "Human Resource Officer",
+      "Employee Benefits Officer",
+      "Health and Wellness Official",
+      "Recruitment and Selection Official",
+      "Human Resource Researcher",
+      "Training and Development Officer",
+      "Change Facilitator",
+      "Organisational Development Practitioner"
+    ]
+  },
+  {
+    name: "Extended Diploma in SMALL BUSINESS MANAGEMENT mathematics/technical mathematics",
+    code: "D34SEQ",
+    minAPS: 19,
+    requirements: {
+      English: 50,
+      Mathematics: 40
+    },
+    jobs: [
+      "Entrepreneur",
+      "Business Owner",
+      "Business Advisor",
+      "Business Manager",
+      "Social Entrepreneur"
+    ]
+  },
+  {
+    name: "Extended Diploma in SMALL BUSINESS MANAGEMENT mathematical literacy",
+    code: "D34SEQ",
+    minAPS: 21,
+    requirements: {
+      English: 50,
+      "Mathematical Literacy": 50
+    },
+    jobs: [
+      "Entrepreneur",
+      "Business Owner",
+      "Business Advisor",
+      "Business Manager",
+      "Social Entrepreneur"
+    ]
+  },
+{
+  name: "BEd in Foundation Phase Teaching (Grade R–3)",
+  code: "B5BFPQ",
+  minAPS: 28,
+  requirements: {
+    "English Home Language": 60,
+    Mathematics: 40
+  },
+  jobs: [
+    "Educator focusing on primary school teaching"
+  ]
+},
+{
+  name: "BEd in Foundation Phase Teaching (Grade R–3)",
+  code: "B5BFPQ",
+  minAPS: 28,
+  requirements: {
+    "English Additional Language": 70,
+    MathematicalLiteracyOrTechMath: 60
+  },
+  jobs: [
+    "Educator focusing on primary school teaching"
+  ],
+  campus: "SWC"
+},
+{
+  name: "BEd in Intermediate Phase Teaching (Grade 4–7)",
+  code: "B5BITQ",
+  minAPS: 28,
+  requirements: {
+    English_home: 60,
+    Mathematics: 40
+  },
+  jobs: [
+    "Educator focusing on primary school teaching"
+  ],
+  campus: "SWC"
+},
+{
+  name: "BEd in Intermediate Phase Teaching (Grade 4–7)",
+  code: "B5BITQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    MathematicalLiteracyOrTechMath: 60
+  },
+  jobs: [
+    "Educator focusing on primary school teaching"
+  ],
+  campus: "SWC"
+},
+{
+  name: "BEd in Senior Phase and FET – Commerce Education: Accounting",
+  code: "B5BSAQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    Mathematics: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Commerce Education: Accounting",
+  code: "B5BSAQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    Mathematics: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Commerce Education: Business Management",
+  code: "B5BSBQ",
+  minAPS: 28,
+  requirements: {
+    English: 50,
+    MathematicalLiteracyOrTechMath: 60
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Commerce Education: Economics",
+  code: "B5BSEQ",
+  minAPS: 28,
+  requirements: {
+    English: 50,
+    Mathematics: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Life Orientation (Psychology)",
+  code: "B5LOPQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Life Orientation (Psychology)",
+  code: "B5LOPQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Geography",
+  code: "B5SGEQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_language: 60,
+    Mathematics: "50%+",
+    PhysicalSciences: "40%+",
+    Geography: "40%+"
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Geography",
+  code: "B5SGEQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    MathematicalLiteracyOrTechMath: 70,
+    Geography: 40
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Life Sciences",
+  code: "B5SLSQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    Mathematics: 50,
+    LifeSciences: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Life Sciences",
+  code: "B5SLSQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    MathematicalLiteracyOrTechMath: 70,
+    LifeSciences: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Mathematics",
+  code: "B5SMMQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    Mathematics: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Mathematics",
+  code: "B5SMMQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    MathematicalLiteracyOrTechMath: 70
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Physical Science",
+  code: "B5SPSQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    Mathematics: 50,
+    PhysicalSciences: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Physical Science",
+  code: "B5SPSQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    Mathematics: 50,
+    PhysicalSciences: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: English",
+  code: "B5LAEQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: English",
+  code: "B5LAEQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: Afrikaans",
+  code: "B5LAFQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    Afrikaans_Home_Language: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: Afrikaans",
+  code: "B5LAFQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    Afrikaans_Additional_Language: 60
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: IsiZulu",
+  code: "B5LAZQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    IsiZulu_Home_Language: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: IsiZulu",
+  code: "B5LAZQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    IsiZulu_Additional_Language: 60
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: Sepedi",
+  code: "B5LASQ",
+  minAPS: 28,
+  requirements: {
+    English_Home_Language: 60,
+    Sepedi_Home_Language: 50
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+  name: "BEd in Senior Phase and FET – Language Education: Sepedi",
+  code: "B5LASQ",
+  minAPS: 28,
+  requirements: {
+    English_Additional_Language: 70,
+    Sepedi_Additional_Language: 60
+  },
+  jobs: [
+    "Educator focusing on high school teaching"
+  ],
+  campus: "APK"
+},
+{
+    name: "Bachelor of Engineering (BEng) – Civil Engineering",
+    code: "B6CISQ",
+    minAPS: 32,
+    requirements: {
+      English_Home_Language: 60,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Plan, design and construction of infrastructure."
+    ],
+    campus: "APK"
+  },
+  {
+    name: "Bachelor of Engineering (BEng) – Civil Engineering",
+    code: "B6CISQ",
+    minAPS: 32,
+    requirements: {
+      English_Additional_Language: 60,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Plan, design and construction of infrastructure."
+    ],
+    campus: "APK"
+  },
+  {
+    name: "Bachelor of Engineering (BEng) – Electrical and Electronic Engineering",
+    code: "B6ELSQ",
+    minAPS: 32,
+    requirements: {
+      English_Home_Language: 60,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Electronic Design, Software System Design."
+    ],
+    campus: "APK"
+  },
+  {
+    name: "Bachelor of Engineering (BEng) – Electrical and Electronic Engineering",
+    code: "B6ELSQ",
+    minAPS: 32,
+    requirements: {
+      English_Additional_Language: 60,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Electronic Design, Software System Design."
+    ],
+    campus: "APK"
+  },
+  {
+    name: "Bachelor of Engineering (BEng) – Mechanical Engineering",
+    code: "B6MESQ",
+    minAPS: 32,
+    requirements: {
+      English_Home_Language: 60,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Designing, manufacturing, and maintenance of machines."
+    ],
+    campus: "APK"
+  },
+  {
+    name: "Bachelor of Engineering (BEng) – Mechanical Engineering",
+    code: "B6MESQ",
+    minAPS: 32,
+    requirements: {
+      English_Additional_Language: 60,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Designing, manufacturing, and maintenance of machines."
+    ],
+    campus: "APK"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Chemical Engineering",
+    code: "B6CE1Q",
+    minAPS: 30,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Design and manage industrial chemical processes for the manufacturing sector."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Chemical Engineering",
+    code: "B6CE1Q",
+    minAPS: 30,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Design and manage industrial chemical processes for the manufacturing sector."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Civil Engineering",
+    code: "B6CV3Q",
+    minAPS: 28,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Plan, design and construction of infrastructure."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Civil Engineering",
+    code: "B6CV3Q",
+    minAPS: 28,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Plan, design and construction of infrastructure."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Electrical Engineering",
+    code: "B6EL1Q",
+    minAPS: 30,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Electronic Design, Software System Design."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Electrical Engineering",
+    code: "B6EL1Q",
+    minAPS: 30,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Electronic Design, Software System Design."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Extraction Metallurgy",
+    code: "B6EXTQ",
+    minAPS: 30,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Manage metallurgical plants that recover and refine metals from mine ores."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Extraction Metallurgy",
+    code: "B6EXTQ",
+    minAPS: 30,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Manage metallurgical plants that recover and refine metals from mine ores."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Industrial Engineering",
+    code: "B6IN2Q",
+    minAPS: 30,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Design and implement systems in organisations to maximise production."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Industrial Engineering",
+    code: "B6IN2Q",
+    minAPS: 30,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Design and implement systems in organisations to maximise production."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Mechanical Engineering",
+    code: "B6MC2Q",
+    minAPS: 30,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Design, manufacture and maintain industrial machines and engines."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Mechanical Engineering",
+    code: "B6MC2Q",
+    minAPS: 30,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Design, manufacture and maintain industrial machines and engines."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Mining Engineering",
+    code: "B6MINQ",
+    minAPS: 23,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Select and manage the correct method of mining in specific geological environments."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Mining Engineering",
+    code: "B6MINQ",
+    minAPS: 23,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Select and manage the correct method of mining in specific geological environments."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Physical Metallurgy",
+    code: "B6PY2Q",
+    minAPS: 30,
+    requirements: {
+      English_Home_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Assesses the suitability of metals for use in metallic goods."
+    ],
+    campus: "DFC"
+  },
+  {
+    name: "Bachelor of Engineering Technology – Physical Metallurgy",
+    code: "B6PY2Q",
+    minAPS: 30,
+    requirements: {
+      English_Additional_Language: 50,
+      Mathematics: 60,
+      PhysicalSciences: 60
+    },
+    jobs: [
+      "Assesses the suitability of metals for use in metallic goods."
+    ],
+    campus: "DFC"
+  },
+{
+  name: "Bachelor of Mine Surveying",
+  code: "B6SU0Q",
+  minAPS: 23,
+  requirements: {
+    English: 50,
+    MathematicsOrTechMath: 60,
+    PhysicalSciencesOrTechScience: 60
+  },
+  jobs: [
+    "Advise surveying mining engineers about geological areas that can be profitably mined"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Bachelor of Science in Construction",
+  code: "B6CN0Q",
+  minAPS: 30,
+  requirements: {
+    English: 50,
+    MathematicsOrTechMath: 60,
+    PhysicalSciencesOrTechScience: 60
+  },
+  jobs: [
+    "Quantity Surveyor",
+    "Construction Manager"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Bachelor of Urban and Regional Planning",
+  code: "B6UP0Q",
+  minAPS: 27,
+  requirements: {
+    English: 50,
+    MathematicsOrTechMath: 60,
+    Geography: 60
+  },
+  jobs: [
+    "Urban and Regional Planner"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Diploma in Management Services",
+  code: "D6MASQ",
+  minAPS: 19,
+  requirements: {
+    English: 50,
+    Mathematics: 40
+  },
+  jobs: [
+    "Advise on improving the efficiency and the productivity of an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Diploma in Management Services (with Mathematical Literacy)",
+  code: "D6MASQ",
+  minAPS: 21,
+  requirements: {
+    English: 50,
+    MathematicalLiteracy: 60
+  },
+  jobs: [
+    "Advise on improving the efficiency and the productivity of an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Diploma in Operations Management",
+  code: "D6OPMQ",
+  minAPS: 20,
+  requirements: {
+    English: 50,
+    Mathematics: 40
+  },
+  jobs: [
+    "Plan, organise and control operational activities in an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Diploma in Operations Management (with Mathematical Literacy)",
+  code: "D6OPMQ",
+  minAPS: 22,
+  requirements: {
+    English: 50,
+    MathematicalLiteracy: 60
+  },
+  jobs: [
+    "Plan, organise and control operational activities in an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BSc in Construction",
+  code: "B6SC0Q",
+  minAPS: 26,
+  requirements: {
+    English: 50,
+    Mathematics: 60,
+    PhysicalSciencesOrTechScience: 60
+  },
+  jobs: [
+    "Quantity Surveyor",
+    "Construction Manager"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BEngTech in Civil Engineering",
+  code: "B6CX3Q",
+  minAPS: 26,
+  requirements: {
+    English: 50,
+    Mathematics: 50,
+    PhysicalSciencesOrTechScience: 50
+  },
+  jobs: [
+    "Civil Engineer – Plan, Design and Construct Infrastructure"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BEngTech in Electrical Engineering",
+  code: "B6L1XQ",
+  minAPS: 26,
+  requirements: {
+    English: 50,
+    Mathematics: 60,
+    PhysicalSciencesOrTechScience: 60
+  },
+  jobs: [
+    "Electronic Design",
+    "Software System Design"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BEngTech in Extraction Metallurgy",
+  code: "B6EX0Q",
+  minAPS: 22,
+  requirements: {
+    English: 50,
+    Mathematics: 50,
+    PhysicalSciencesOrTechScience: 50
+  },
+  jobs: [
+    "Manage metallurgical plants to recover and refine metals or other valuable constituents in mine ores"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BEngTech in Industrial Engineering",
+  code: "B6IX2Q",
+  minAPS: 24,
+  requirements: {
+    English: 50,
+    Mathematics: 60,
+    PhysicalSciencesOrTechScience: 60
+  },
+  jobs: [
+    "Design and implement systems in organisations to maximise production"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BEngTech in Mechanical Engineering",
+  code: "B6MX2Q",
+  minAPS: 24,
+  requirements: {
+    English: 50,
+    Mathematics: 60,
+    PhysicalSciencesOrTechScience: 60
+  },
+  jobs: [
+    "Design, manufacture and maintain industrial machines and engines"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended BEngTech in Physical Metallurgy",
+  code: "B6PX2Q",
+  minAPS: 22,
+  requirements: {
+    English: 50,
+    Mathematics: 50,
+    PhysicalSciencesOrTechScience: 50
+  },
+  jobs: [
+    "Assess suitability of metals for their use in metallic goods"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended Diploma in Management Services",
+  code: "D6MAEQ",
+  minAPS: 19,
+  requirements: {
+    English: 50,
+    Mathematics: 40
+  },
+  jobs: [
+    "Advise on improving the efficiency and productivity of an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended Diploma in Management Services (with Mathematical Literacy)",
+  code: "D6MAEQ",
+  minAPS: 21,
+  requirements: {
+    English: 50,
+    MathematicalLiteracy: 60
+  },
+  jobs: [
+    "Advise on improving the efficiency and productivity of an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended Diploma in Operations Management",
+  code: "D6OPEQ",
+  minAPS: 20,
+  requirements: {
+    English: 50,
+    Mathematics: 40
+  },
+  jobs: [
+    "Plan, organise and control operational activities in an organisation"
+  ],
+  campus: "DFC"
+},
+{
+  name: "Extended Diploma in Operations Management (with Mathematical Literacy)",
+  code: "D6OPEQ",
+  minAPS: 22,
+  requirements: {
+    English: 50,
+    MathematicalLiteracy: 60
+  },
+  jobs: [
+    "Plan, organise and control operational activities in an organisation"
+  ],
+  campus: "DFC"
+},
+{
+    "name": "Bachelor of Biokinetics",
+    "code": "B9S15Q",
+    "minAPS": 32,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "MathematicalLiteracy": 60
+    },
+    "jobs": [
+      "Biokineticist focusing on health promotion, wellness and disease prevention"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Diagnostic Radiography",
+    "code": "B9M01Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 60
+    },
+    "jobs": [
+      "Radiographer using X-ray and MRI equipment"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Diagnostic Ultrasound",
+    "code": "B9M03Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 60
+    },
+    "jobs": [
+      "Diagnostic Ultrasound Practitioner"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Nuclear Medicine",
+    "code": "B9M02Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 60
+    },
+    "jobs": [
+      "Nuclear Medicine Practitioner"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Radiation Therapy",
+    "code": "B9M04Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 60
+    },
+    "jobs": [
+      "Radiation Therapist"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Health Sciences in Chiropractic",
+    "code": "B9C01Q",
+    "minAPS": 28,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Chiropractor"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Health Sciences in Complementary Medicine",
+    "code": "B9CM1Q",
+    "minAPS": 28,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Acupuncturist",
+      "Wellness industry specialist",
+      "Patient services co-ordinator",
+      "Health journalist"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Emergency Medical Care",
+    "code": "B9E01Q",
+    "minAPS": 27,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Emergency Care Practitioner"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Medical Laboratory Science",
+    "code": "B9B01Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 60
+    },
+    "jobs": [
+      "Medical Laboratory Scientist"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Podiatry",
+    "code": "B9P01Q",
+    "minAPS": 28,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Podiatrist"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Nursing",
+    "code": "B9N02Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Professional Nurse and Midwife"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Optometry",
+    "code": "B9O02Q",
+    "minAPS": 34,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 60,
+      "LifeSciences": 60
+    },
+    "jobs": [
+      "Optometrist in general or specialised areas such as contact lenses, paediatric optometry, or low vision care"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Bachelor of Environmental Health",
+    "code": "B9ENV1",
+    "minAPS": 24,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 50,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Environmental Health Practitioner",
+      "Occupational Health and Safety Officer",
+      "Water Quality and Waste Manager"
+    ],
+    "campus": "DFC"
+  },
+{
+    "name": "Bachelor of Social Work",
+    "code": "B7025Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60
+    },
+    "jobs": [
+      "Social Worker in Private Sector",
+      "Welfare Organisations",
+      "Government",
+      "Non-Governmental Organisation"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "Bachelor of Arts",
+    "code": "B7023Q",
+    "minAPS": 27,
+    "requirements": {
+      "English": 60
+    },
+    "jobs": [
+      "Anthropologist",
+      "Ethicist",
+      "Social Responsibility Officer",
+      "Manager of Multicultural and Gender Affairs",
+      "General Manager",
+      "Teacher",
+      "Human Resources Development",
+      "Public Governance",
+      "Civil Service",
+      "Politics",
+      "Financial Sector",
+      "Journalist",
+      "Development Planner",
+      "Development Administrator",
+      "Researcher",
+      "Work for NGOs, Government or Private Sector",
+      "Director",
+      "Producer",
+      "Script Writer",
+      "Production Crew",
+      "Copywriter",
+      "Corporate Journalism",
+      "Translators",
+      "Interpreters",
+      "Language Planners",
+      "Copy Editors",
+      "Literary Reviewers",
+      "Visual/Literary Specialists",
+      "Language Teachers/Trainers",
+      "Public Relations",
+      "Marketing",
+      "Human Resources",
+      "Account Manager",
+      "Strategic Planner",
+      "Media Planner",
+      "Brand Manager",
+      "Marketing Communication Practitioner",
+      "Communication Researcher",
+      "Communication Consultant",
+      "Psychologist (postgraduate required)"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BA with specialisation in Language Practice",
+    "code": "B7026Q",
+    "minAPS": 27,
+    "requirements": {
+      "English": 60
+    },
+    "jobs": [
+      "Language practitioner (translator, text editor, interpreter)",
+      "Language planner",
+      "Language manager",
+      "Lexicographer",
+      "Terminologist",
+      "Copy writer",
+      "Journalist",
+      "Subtitler",
+      "Plain language specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BA with specialisation in Politics, Economics and Technology",
+    "code": "B7024Q",
+    "minAPS": 27,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 50
+    },
+    "jobs": [
+      "Apprentice data analyst",
+      "Researcher",
+      "Account manager",
+      "Sales data management and development",
+      "Business development",
+      "Trainee analyst",
+      "Import/export administrator",
+      "Financial operations",
+      "Information management",
+      "Economic analysis",
+      "Postgraduate study"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "Community Development and Leadership",
+    "code": "B7015Q",
+    "minAPS": 27,
+    "requirements": {
+      "English": 60
+    },
+    "jobs": [
+      "Municipalities",
+      "Government Departments (e.g. Social Development)",
+      "NGOs (focusing on development work)"
+    ],
+    "campus": "SWC"
+  },
+  {
+    "name": "BA with specialisation in Development Studies",
+    "code": "B7EX2Q",
+    "minAPS": 24,
+    "requirements": {
+      "English": 50
+    },
+    "jobs": [
+      "Social development and/or social changes practitioner",
+      "Researchers of social change",
+      "Activists",
+      "Foreign service",
+      "Enterprise and organisational development"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BA with specialisation in Linguistics",
+    "code": "B7EX3Q",
+    "minAPS": 24,
+    "requirements": {
+      "English": 50
+    },
+    "jobs": [
+      "Teaching of English to speakers of other languages",
+      "Training",
+      "Research and administration",
+      "Business communication in the public sector",
+      "Market research",
+      "Interpreting and translating",
+      "Academic career"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BA with specialisation in Linguistics and Language Practice",
+    "code": "B7EX4Q",
+    "minAPS": 24,
+    "requirements": {
+      "English": 50
+    },
+    "jobs": [
+      "Language practitioner (translator, text editor, interpreter)",
+      "Language planner",
+      "Language manager",
+      "Lexicographer",
+      "Terminologist",
+      "Copy writer",
+      "Journalist",
+      "Subtitler",
+      "Plain language specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BA with specialisation in Strategic Communication",
+    "code": "B7EX5Q",
+    "minAPS": 24,
+    "requirements": {
+      "English": 50
+    },
+    "jobs": [
+      "Brand managers",
+      "Social media strategists",
+      "Digital data analysts",
+      "Online advertising planners",
+      "Digital marketing managers",
+      "Advertising and public relations specialists",
+      "Media planners",
+      "Development officers",
+      "Communication officers",
+      "Communication and reputation managers",
+      "Stakeholder managers",
+      "Corporate social responsibility specialists",
+      "Media relations managers",
+      "Company spokespersons"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "Diploma in Public Relations and Communication",
+    "code": "D7002Q",
+    "minAPS": 25,
+    "requirements": {
+      "English": 60
+    },
+    "jobs": [
+      "PR Practitioner"
+    ],
+    "campus": "APB"
+  },
+  {
+    "name": "Extended Diploma in Public Relations and Communication",
+    "code": "D7EX2Q",
+    "minAPS": 24,
+    "requirements": {
+      "English": 50
+    },
+    "jobs": [
+      "PR Practitioner"
+    ],
+    "campus": "APB"
+  },
+{
+    "name": "BA (Law)",
+    "code": "B4A01Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Additional Language": 50,
+      "Mathematics": 40
+    },
+    "notes": "31 APS with Mathematics OR 32 with Mathematical Literacy",
+    "jobs": [
+      "Legal Advisor",
+      "Career in Public Administration"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BA (Law)",
+    "code": "B4A01Q",
+    "minAPS": 32,
+    "requirements": {
+      "English": 60,
+      "Additional Language": 50,
+      "Mathematics": 50
+    },
+    "notes": "31 APS with Mathematics OR 32 with Mathematical Literacy",
+    "jobs": [
+      "Legal Advisor",
+      "Career in Public Administration"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BCom (Law)",
+    "code": "B4C01Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Additional Language": 50,
+      "Mathematics": 50
+    },
+    "notes": "Mathematics only. Mathematical Literacy not accepted.",
+    "jobs": [
+      "Legal Advisor",
+      "Career in Commerce"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "LLB",
+    "code": "B4L03Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Additional Language": 50,
+      "Mathematics": 40
+    },
+    "notes": "31 APS with Mathematics OR 32 with Mathematical Literacy",
+    "jobs": [
+      "Advocate",
+      "Attorney",
+      "State Advocate",
+      "Legal Advisor",
+      "Magistrate",
+      "Public Prosecutor"
+    ],
+    "campus": "APK"
+  },
+ {
+    "name": "LLB",
+    "code": "B4L03Q",
+    "minAPS": 32,
+    "requirements": {
+      "English": 60,
+      "Additional Language": 50,
+      "Mathematicslite": 50
+    },
+    "notes": "31 APS with Mathematics OR 32 with Mathematical Literacy",
+    "jobs": [
+      "Advocate",
+      "Attorney",
+      "State Advocate",
+      "Legal Advisor",
+      "Magistrate",
+      "Public Prosecutor"
+    ],
+    "campus": "APK"
+  },
+{
+    "name": "BSc in Information Technology",
+    "code": "B2I01Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Systems Analyst",
+      "Network Manager",
+      "Programmer",
+      "Web Developer",
+      "Web Master",
+      "Database Administrator",
+      "Software Engineer",
+      "Computer Graphics Designer",
+      "Information Technology Manager",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Computer Science and Informatics",
+    "code": "B2I02Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Systems Analyst",
+      "Network Manager",
+      "Programmer",
+      "Web Developer",
+      "Web Master",
+      "Database Administrator",
+      "Software Engineer",
+      "Computer Graphics Designer",
+      "Information Technology Manager",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Computer Science and Informatics specialising in AI (Artificial Intelligence)",
+    "code": "B2I04Q",
+    "minAPS": 34,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 80
+    },
+    "jobs": [
+      "Security Architect",
+      "Knowledge Manager",
+      "Cyber Crime Investigator",
+      "All-Source Analyst",
+      "IT Investment/Portfolio Manager",
+      "Systems Analyst",
+      "Network Manager",
+      "Programmer",
+      "Web Developer",
+      "Web Master",
+      "Database Administrator",
+      "Software Engineer",
+      "Computer Graphics Designer",
+      "Information Technology Manager",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Biochemistry and Botany",
+    "code": "B2L10Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Analyst",
+      "Technologist",
+      "Researcher at Sasol, Eskom, Pharmaceutical Companies, Mining Companies or in Health Industry"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Botany and Chemistry",
+    "code": "B2L11Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Biologist",
+      "Botanist",
+      "Ecologist",
+      "Nature Conservation Scientist",
+      "Forensic Scientist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Botany and Zoology",
+    "code": "B2L12Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Biologist",
+      "Nature Conservationist",
+      "Environmentalist",
+      "Ethno-Botanist",
+      "Ecologist",
+      "Entomologist",
+      "Pathologist",
+      "Parasitologist",
+      "Geneticist",
+      "Food Technologist",
+      "Zoologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Zoology and Biochemistry",
+    "code": "B2L13Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Zoologist",
+      "Biochemist",
+      "Nature Conservationist",
+      "Environmentalist",
+      "Ecologist",
+      "Entomologist",
+      "Pathologist",
+      "Geneticist",
+      "Food Technologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Zoology and Chemistry",
+    "code": "B2L14Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Zoologist",
+      "Chemical Technologist",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Zoology and Environmental Management",
+    "code": "B2L15Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geo-Zoologist",
+      "Population Geneticist",
+      "Environmental Ecologist",
+      "Specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Zoology and Geography",
+    "code": "B2L16Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geo-Zoologist",
+      "Population Geneticist",
+      "Environmental Ecologist",
+      "Specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Zoology and Physiology",
+    "code": "B2L17Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Zoologist",
+      "Forensic Pathologist",
+      "Geneticist",
+      "Parasitologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Physiology and Biochemistry",
+    "code": "B2L18Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Biochemist",
+      "Researcher",
+      "Forensic Analyst",
+      "Biotechnologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Physiology and Psychology",
+    "code": "B2L26Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Psychologist",
+      "Forensic Pathologist",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Geography and Environmental Management",
+    "code": "B2L20Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Location Analyst",
+      "Town Planner",
+      "Geo-Information Specialist",
+      "Environmental Rehabilitation Manager",
+      "Geomorphologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Geology and Environmental Management",
+    "code": "B2L24Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geographer",
+      "Geologist",
+      "Mineralogist",
+      "Regional Planner",
+      "Site Analyst",
+      "GIS Specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences – Geology and Geography",
+    "code": "B2L25Q",
+    "minAPS": 30,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geographer",
+      "Geologist",
+      "Mineralogist",
+      "Regional Planner",
+      "Site Analyst",
+      "Geographical Information Specialist"
+    ],
+    "campus": "APK"
+  },
+{
+    "name": "BSc in Applied Mathematics and Computer Science",
+    "code": "B2M40Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst",
+      "Mathematical Modulator"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Applied Mathematics and Mathematical Statistics",
+    "code": "B2M41Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Mathematician",
+      "Data Compiler",
+      "Data Interpreter",
+      "Biometrician"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Applied Mathematics and Mathematics",
+    "code": "B2M42Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Mathematical Modulator",
+      "Mathematical Adviser"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Computational Science",
+    "code": "B2M43Q",
+    "minAPS": 33,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 80,
+      "PhysicalSciences": 60
+    },
+    "jobs": [
+      "Software Specialist in high-tech industry",
+      "Designer of medical monitors"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Statistics and Computer Science",
+    "code": "B2M44Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Computer Programmer",
+      "System Analyst",
+      "Data Compiler and Analyst"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematics and Computer Science",
+    "code": "B2M45Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst",
+      "Mathematical Advisor"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematics and Informatics",
+    "code": "B2M46Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematics and Mathematical Statistics",
+    "code": "B2M47Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Financial Analyst",
+      "Economist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematics and Psychology",
+    "code": "B2M54Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Mathematician",
+      "Teacher",
+      "Researcher",
+      "Psychologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematics and Mathematical Statistics (Financial Orientation)",
+    "code": "B2M55Q",
+    "minAPS": 33,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Mathematician",
+      "Data Interpreter",
+      "Research Statistician",
+      "Mathematical Advisor"
+    ],
+    "campus": "APK"
+  },
+{
+    "name": "BSc in Mathematical Statistics and Economics (Financial Orientation)",
+    "code": "B2M56Q",
+    "minAPS": 33,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Econometrist",
+      "Investment Economist",
+      "Biometricist",
+      "Economic Journalist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematics and Economics (Financial Orientation)",
+    "code": "B2M57Q",
+    "minAPS": 33,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70
+    },
+    "jobs": [
+      "Econometrist",
+      "Investment Economist",
+      "Consultant"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Actuarial Science",
+    "code": "B2M52Q",
+    "minAPS": 33,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 80
+    },
+    "jobs": [
+      "Actuary",
+      "Actuarial Analyst",
+      "Quantitative Analyst",
+      "Risk Manager",
+      "Investment Manager",
+      "Credit Ratings Analyst",
+      "Statistician",
+      "Academic"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Biochemistry and Chemistry",
+    "code": "B2P70Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 60,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Scientist in the field of food and water",
+      "Biomedical Scientist",
+      "Biotechnological Scientist",
+      "Agricultural Scientist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Chemistry and Mathematics",
+    "code": "B2P71Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 60
+    },
+    "jobs": [
+      "Chemist",
+      "Researcher",
+      "Technologist",
+      "Problem Solver"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Chemistry and Physics",
+    "code": "B2P72Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 60
+    },
+    "jobs": [
+      "Physicist",
+      "Researcher",
+      "Chemistry Technologist",
+      "Forensic Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Geology and Chemistry",
+    "code": "B2P81Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geochemist",
+      "Geologist",
+      "Forensic Scientist",
+      "Exploration Expert"
+    ],
+    "campus": "APK"
+  },
+{
+    "name": "BSc in Geology and Mathematics",
+    "code": "B2P82Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Geomathematician",
+      "Geologist",
+      "Problem Analyst"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Geology and Physics",
+    "code": "B2P83Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Physicist",
+      "Geophysicist",
+      "Geohydrologist",
+      "Geologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Physics and Applied Mathematics",
+    "code": "B2P77Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 60
+    },
+    "jobs": [
+      "Problem Solver",
+      "Researcher in Astronomy and Energy Sources"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Physics and Mathematics",
+    "code": "B2P78Q",
+    "minAPS": 31,
+    "requirements": {
+      "English": 60,
+      "Mathematics": 70,
+      "PhysicalSciences": 60
+    },
+    "jobs": [
+      "Problem Solver",
+      "Researcher in Astronomy and Energy Sources"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Information Technology (Extended) - Computer Science and Informatics",
+    "code": "B2E01Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Systems Analyst",
+      "Network Manager",
+      "Programmer",
+      "Web Developer",
+      "Web Master",
+      "Database Administrator",
+      "Software Engineer",
+      "Computer Graphics Designer",
+      "Information Technology Manager",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Biochemistry and Botany",
+    "code": "B2E10Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Analyst",
+      "Technologist",
+      "Researcher at Sasol",
+      "Researcher at Eskom",
+      "Pharmaceutical Industry Researcher",
+      "Mining Industry Researcher",
+      "Health Industry Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Botany and Chemistry",
+    "code": "B2E11Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Biologist",
+      "Botanist",
+      "Ecologist",
+      "Nature Conservation Scientist",
+      "Forensic Scientist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Botany and Zoology",
+    "code": "B2E12Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Biologist",
+      "Nature Conservationist",
+      "Environmentalist",
+      "Ethno-Botanist",
+      "Ecologist",
+      "Entomologist",
+      "Pathologist",
+      "Parasitologist",
+      "Geneticist",
+      "Food Technologist",
+      "Zoologist"
+    ],
+    "campus": "APK"
+  },
+{
+    "name": "BSc in Life and Environmental Sciences (Extended) - Geography and Environmental Management",
+    "code": "B2E13Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Location Analyst",
+      "Town Planner",
+      "Geo-Information Specialist",
+      "Environmental Rehabilitation Manager",
+      "Geomorphologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Physiology and Biochemistry",
+    "code": "B2E14Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Biochemist",
+      "Researcher",
+      "Forensic Analyst",
+      "Biotechnologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Physiology and Psychology",
+    "code": "B2E22Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Psychologist",
+      "Forensic Pathologist",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Zoology and Biochemistry",
+    "code": "B2E17Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Zoologist",
+      "Biochemist",
+      "Nature Conservationist",
+      "Environmentalist",
+      "Ecologist",
+      "Entomologist",
+      "Pathologist",
+      "Geneticist",
+      "Food Technologist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Zoology and Chemistry",
+    "code": "B2E18Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Zoologist",
+      "Chemical Technologist",
+      "Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Zoology and Environmental Management",
+    "code": "B2E19Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geo-Zoologist",
+      "Population Geneticist",
+      "Environmental Ecologist",
+      "Environmental Specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Life and Environmental Sciences (Extended) - Zoology and Geography",
+    "code": "B2E20Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Geo-Zoologist",
+      "Population Geneticist",
+      "Environmental Ecologist",
+      "Environmental Specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Applied Mathematics and Computer Science",
+    "code": "B2E40Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst",
+      "Mathematical Modulator"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Applied Mathematics and Mathematical Statistics",
+    "code": "B2E41Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Mathematician",
+      "Data Compiler",
+      "Data Interpreter",
+      "Biometrician"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Applied Mathematics and Mathematics",
+    "code": "B2E42Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Mathematical Modulator",
+      "Mathematical Adviser"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Mathematical Statistics and Computer Science",
+    "code": "B2E43Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst",
+      "Data Compiler",
+      "Data Analyst"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Mathematics and Computer Science",
+    "code": "B2E44Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst",
+      "Mathematical Advisor"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Mathematics and Informatics",
+    "code": "B2E45Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Computer Programmer",
+      "Systems Analyst"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Mathematics and Mathematical Statistics",
+    "code": "B2E46Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Financial Analyst",
+      "Economist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Mathematical Sciences (Extended) - Mathematics and Psychology",
+    "code": "B2E49Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60
+    },
+    "jobs": [
+      "Mathematician",
+      "Teacher",
+      "Researcher",
+      "Psychologist"
+    ],
+    "campus": "APK"
+  },
+{
+    "name": "BSc in Physical Sciences (Extended) - Biochemistry and Chemistry",
+    "code": "B2E70Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50,
+      "LifeSciences": 50
+    },
+    "jobs": [
+      "Scientist in the field of food and water",
+      "Biomedical Scientist",
+      "Biotechnologist",
+      "Agricultural Sector Specialist"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Physical Sciences (Extended) - Chemistry and Mathematics",
+    "code": "B2E71Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Chemistry Researcher",
+      "Chemistry Technologist",
+      "Problem Solver"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Physical Sciences (Extended) - Chemistry and Physics",
+    "code": "B2E72Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Physicist",
+      "Researcher",
+      "Chemistry Technologist",
+      "Forensic Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Physical Sciences (Extended) - Physics and Applied Mathematics",
+    "code": "B2E73Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Problem Solver",
+      "Astronomy Researcher",
+      "Energy Sources Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "BSc in Physical Sciences (Extended) - Physics and Mathematics",
+    "code": "B2E74Q",
+    "minAPS": 26,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 60,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Problem Solver",
+      "Astronomy Researcher",
+      "Energy Sources Researcher"
+    ],
+    "campus": "APK"
+  },
+  {
+    "name": "Diploma in Analytical Chemistry (Extended)",
+    "code": "D2ACXQ",
+    "minAPS": 22,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 40,
+      "PhysicalSciences": 50
+    },
+    "jobs": [
+      "Analytical Chemist",
+      "Quality Control Chemist"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Diploma in Biotechnology (Extended)",
+    "code": "D2BTEQ",
+    "minAPS": 23,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 40,
+      "PhysicalSciences": 40,
+      "LifeSciences": 40
+    },
+    "jobs": [
+      "Biotechnologist",
+      "Biochemical Engineer"
+    ],
+    "campus": "DFC"
+  },
+  {
+    "name": "Diploma in Food Technology (Extended)",
+    "code": "D2FTEQ",
+    "minAPS": 22,
+    "requirements": {
+      "English": 50,
+      "Mathematics": 40,
+      "PhysicalSciences": 40,
+      "LifeSciences": 40
+    },
+    "jobs": [
+      "Food Technologist",
+      "Food Processing Specialist",
+      "Food Safety Expert"
+    ],
+    "campus": "DFC"
+  }
+
+];
+            const courseSelect = document.getElementById('course');
+    courses.forEach((course, index) => {
+      const opt = document.createElement('option');
+      opt.value = index;
+      opt.textContent = course.name;
+      courseSelect.appendChild(opt);
+    });
+
+    courseSelect.addEventListener('change', () => {
+      const selectedCourse = courses[courseSelect.value];
+      const container = document.getElementById('subjectsContainer');
+      container.innerHTML = '';
+      for (const subject in selectedCourse.requirements) {
+        container.innerHTML += `
+          <label>${subject} Mark:</label>
+          <input type="number" id="sub-${subject}" min="0" max="100" />
+        `;
+      }
+    });
+    courseSelect.dispatchEvent(new Event('change'));
+
+    let eligibilityClicks = parseInt(localStorage.getItem('eligibilityClicks') || 0);
+    let jobsClicks = parseInt(localStorage.getItem('jobsClicks') || 0);
+    const maxClicks = Math.random() < 0.5 ? 8 : 12;
+
+    function handleButtonClick(buttonId, originalFunction) {
+      if (buttonId === 'eligibilityBtn') {
+        eligibilityClicks++;
+        localStorage.setItem('eligibilityClicks', eligibilityClicks);
+        if (eligibilityClicks >= maxClicks) {
+          showAdButton(buttonId, originalFunction);
+          return;
+        }
+      } else if (buttonId === 'jobsBtn') {
+        jobsClicks++;
+        localStorage.setItem('jobsClicks', jobsClicks);
+        if (jobsClicks >= maxClicks) {
+          showAdButton(buttonId, originalFunction);
+          return;
+        }
+      }
+      originalFunction();
+    }
+
+    function showAdButton(buttonId, originalFunction) {
+      const btn = document.getElementById(buttonId);
+      const newBtn = document.createElement('button');
+      newBtn.textContent = 'Click Here & Wait 8s to Get Features Back';
+      newBtn.style.backgroundColor = 'red';
+      newBtn.onclick = () => {
+        window.open(adUrl, '_blank');
+        document.getElementById('noticeBox').textContent = 'Please wait 8 seconds then return to this tab. Features will be back.';
+        setTimeout(() => {
+          document.getElementById('noticeBox').textContent = '';
+          newBtn.replaceWith(btn);
+          eligibilityClicks = 0;
+          jobsClicks = 0;
+          localStorage.setItem('eligibilityClicks', '0');
+          localStorage.setItem('jobsClicks', '0');
+        }, 8000);
+      };
+      btn.replaceWith(newBtn);
+    }
+
+    function checkEligibility() {
+      const selectedCourse = courses[courseSelect.value];
+      const userAPS = parseInt(document.getElementById('aps').value);
+      const results = [];
+
+      let totalScore = 0;
+      let subjectCount = 0;
+      let anyBelowMinimum = false;
+
+      for (const subject in selectedCourse.requirements) {
+        const mark = parseInt(document.getElementById(`sub-${subject}`).value);
+        const required = selectedCourse.requirements[subject];
+        const diff = mark - required;
+        subjectCount++;
+
+        let category = '';
+        let color = '';
+
+        if (mark >= required) {
+          if (diff <= 5) { category = 'Minimum Met'; color = 'orange'; }
+          else if (diff <= 25) { category = 'Moderate Match'; color = 'gold'; }
+          else if (diff <= 50) { category = 'Strong Match'; color = 'lightgreen'; }
+          else { category = 'Very Strong Match'; color = 'green'; }
+        } else {
+          category = 'Below Requirement'; color = 'red'; anyBelowMinimum = true;
+        }
+
+        totalScore += mark;
+        results.push(`<li style="color: ${color};">${subject}: ${mark}% — ${category}</li>`);
+      }
+
+      let apsMsg = '';
+      const apsDiff = userAPS - selectedCourse.minAPS;
+      let apsSuccess = 0;
+
+      if (userAPS >= selectedCourse.minAPS) {
+        if (apsDiff <= 2) apsMsg = 'APS: Just Met';
+        else if (apsDiff <= 6) apsMsg = 'APS: Moderate';
+        else if (apsDiff <= 12) apsMsg = 'APS: Strong';
+        else apsMsg = 'APS: Very Strong';
+        apsSuccess = Math.min(apsDiff * 5 + 40, 95);
+      } else {
+        apsMsg = 'APS: Below Requirement';
+        apsSuccess = 25;
+      }
+
+      if (anyBelowMinimum) apsSuccess = Math.min(apsSuccess, 40);
+
+      const avgSubjectScore = totalScore / subjectCount;
+      const subjectScoreBoost = Math.min((avgSubjectScore - 50) * 0.5, 30);
+      const finalEstimate = Math.min(apsSuccess + subjectScoreBoost, 99).toFixed(1);
+
+      document.getElementById('resultBox').innerHTML = `
+        <h3>Results for ${selectedCourse.name}</h3>
+        <ul>${results.join('')}</ul>
+        <p><strong>${apsMsg}</strong></p>
+        <p><strong>Estimated success rate: ${finalEstimate}%</strong></p>
+      `;
+    }
+
+    function showJobs() {
+      const selectedCourse = courses[courseSelect.value];
+      const jobs = selectedCourse.jobs || [];
+      const jobsBox = document.getElementById('jobsBox');
+
+      if (jobs.length === 0) {
+        jobsBox.innerHTML = "<p>No job information available for this course.</p>";
+        return;
+      }
+
+      jobsBox.innerHTML = `
+        <h3>Possible Career Paths for ${selectedCourse.name}</h3>
+        <ul>${jobs.map(job => `<li>${job}</li>`).join('')}</ul>
+      `;
+    }
+  </script></body>
+</html>
