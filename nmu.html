@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTECH | NMU Course Eligibility Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #e6f0fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .logo-container {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .logo-container img {
+      height: 100px;
+    }
+    header {
+      background-color: #00509e;
+      color: white;
+      padding: 10px 0;
+      text-align: center;
+    }
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: white;
+      border: 1px solid #cce0f5;
+      border-radius: 8px;
+      flex-grow: 1;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #003366;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #aac8f0;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #0073e6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #dfefff;
+      border: 1px solid #0073e6;
+      border-radius: 4px;
+    }
+    footer {
+      background-color: #003366;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+    #supportBtn {
+      position: fixed;
+      top: 12px;
+      right: 0;
+      width: 25%;
+      max-width: 180px;
+      padding: 10px;
+      font-size: 14px;
+      background-color: #ff3b3f;
+      color: white;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      cursor: pointer;
+      z-index: 1000;
+      text-align: center;
+      box-shadow: -2px 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    #supportBtn:hover {
+      background-color: #d62c30;
+    }
+    #noticeBox {
+      text-align: center;
+      color: red;
+      margin: 15px 0;
+    }
+    .subject-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .subject-row select,
+    .subject-row input {
+      margin-bottom: 0;
+      margin-right: 10px;
+      flex: 1;
+    }
+    .subject-row button {
+      width: auto;
+      margin-bottom: 0;
+      background-color: #ff3b3f;
+      flex: 0 0 100px;
+    }
+    .subject-row button:hover {
+      background-color: #d62c30;
+    }
+    .as-info {
+      background-color: #e6f0fa;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border-left: 4px solid #0073e6;
+    }
+    .faculty-section {
+      background-color: #f0f8ff;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border-left: 4px solid #0073e6;
+    }
+  </style>
+</head>
+<body>
+  <button id="supportBtn" onclick="window.open(adUrl, '_blank')">Support</button>
+  <div class="logo-container">
+    <img src="logo.png" alt="DTECH Logo" />
+  </div>
+  <main>
+    <h2>NELSON MANDELA UNIVERSITY Course Eligibility Checker</h2>
+    <div id="noticeBox"></div>
+
+    <div class="as-info">
+      <h3>NMU uses an AS (Admission Score) System</h3>
+      <p>Enter your subject percentages below to calculate your AS. Add all your subjects including required ones for your chosen course.</p>
+      <p><strong>AS Calculation:</strong> Average of your best 6 subject percentages (excluding Life Orientation)</p>
+    </div>
+
+    <label for="search">Search courses:</label>
+    <input type="text" id="search" placeholder="Type course name..." />
+
+    <label for="course">Choose a course:</label>
+    <select id="course"></select>
+
+    <h3>Calculate Your AS</h3>
+    <div id="subjectsContainer">
+      <!-- Default subjects will be added here -->
+    </div>
+    
+    <button id="addSubjectBtn" onclick="addSubject()">Add Another Subject</button>
+    
+    <div id="asResult" class="result" style="display: none;">
+      <h3>Your Calculated AS: <span id="calculatedAS">0</span></h3>
+    </div>
+
+    <button id="eligibilityBtn" onclick="handleButtonClick('eligibilityBtn', checkEligibility)">Check Eligibility</button>
+    <button id="jobsBtn" onclick="handleButtonClick('jobsBtn', showJobs)">Show Related Jobs</button>
+
+    <div class="result" id="resultBox"></div>
+    <div class="result" id="jobsBox"></div>
+  </main>
+  <footer>
+    &copy; 2025 DTECH | Developed and Owned by Preasx24. All rights reserved.
+  </footer>
+
+  <script>
+    const adUrl = 'https://cafewarriors.com/spymr251ew?key=ce76edf7e5c6e4907177e712dc143365';
+
+    // COMPLETE NMU COURSES DATA - All faculties including Higher Certificates, Diplomas and Degrees
+    const courses = [
+      // FACULTY OF BUSINESS AND ECONOMIC SCIENCES
+      {
+        "name": "Higher Certificate in Accounting",
+        "code": "HCACC",
+        "minAS": 22,
+        "requirements": {
+          "Mathematics": 40,
+          "English": 40
+        },
+        "jobs": [
+          "Accounting Clerk",
+          "Bookkeeper",
+          "Accounts Payable/Receivable Clerk"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Higher Certificate in Economic and Management Sciences",
+        "code": "HCEMS",
+        "minAS": 22,
+        "requirements": {
+          "Mathematics": 40,
+          "English": 40
+        },
+        "jobs": [
+          "Office Administrator",
+          "Junior Manager",
+          "Business Assistant"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Diploma in Accountancy",
+        "code": "DIPACC",
+        "minAS": 26,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Accounting Technician",
+          "Tax Assistant",
+          "Bookkeeper"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Internal Auditing",
+        "code": "DIPAUD",
+        "minAS": 26,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Internal Audit Assistant",
+          "Compliance Officer",
+          "Risk Assistant"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Management",
+        "code": "DIPMGT",
+        "minAS": 26,
+        "requirements": {
+          "Mathematics": 40,
+          "English": 50
+        },
+        "jobs": [
+          "Junior Manager",
+          "Team Leader",
+          "Office Administrator"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Marketing",
+        "code": "DIPMKT",
+        "minAS": 26,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Marketing Assistant",
+          "Sales Representative",
+          "Digital Marketing Assistant"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Retail Management",
+        "code": "DIPRET",
+        "minAS": 26,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Retail Manager",
+          "Store Supervisor",
+          "Merchandiser"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Bachelor of Commerce in Accounting",
+        "code": "BCOMACC",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Chartered Accountant",
+          "Auditor",
+          "Financial Manager",
+          "Tax Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Commerce in Economics",
+        "code": "BCOMECON",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Economist",
+          "Policy Analyst",
+          "Financial Analyst",
+          "Research Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Commerce in Business Management",
+        "code": "BCOMBM",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Business Manager",
+          "Entrepreneur",
+          "Operations Manager",
+          "Management Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Commerce in Human Resource Management",
+        "code": "BCOMHR",
+        "minAS": 30,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "HR Manager",
+          "Recruitment Specialist",
+          "Training Officer",
+          "Labor Relations Officer"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Commerce in Marketing",
+        "code": "BCOMMKT",
+        "minAS": 30,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Marketing Manager",
+          "Brand Manager",
+          "Digital Marketing Specialist",
+          "Market Researcher"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Commerce in Financial Planning",
+        "code": "BCOMFP",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Financial Planner",
+          "Investment Advisor",
+          "Wealth Manager",
+          "Retirement Planner"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Commerce in Supply Chain Management",
+        "code": "BCOMSCM",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Supply Chain Manager",
+          "Logistics Coordinator",
+          "Procurement Officer",
+          "Inventory Manager"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Business Science",
+        "code": "BBUSSCI",
+        "minAS": 38,
+        "requirements": {
+          "Mathematics": 70,
+          "English": 60
+        },
+        "jobs": [
+          "Business Analyst",
+          "Management Consultant",
+          "Operations Manager",
+          "Entrepreneur"
+        ],
+        "campus": "South",
+        "faculty": "Business and Economic Sciences",
+        "level": "Bachelor's Degree"
+      },
+
+      // FACULTY OF ENGINEERING, THE BUILT ENVIRONMENT AND TECHNOLOGY
+      {
+        "name": "Higher Certificate in Mechanical Engineering",
+        "code": "HCMECH",
+        "minAS": 24,
+        "requirements": {
+          "Mathematics": 50,
+          "Physical Sciences": 50,
+          "English": 40
+        },
+        "jobs": [
+          "Mechanical Engineering Technician",
+          "CAD Operator",
+          "Maintenance Assistant"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Higher Certificate in Electrical Engineering",
+        "code": "HCELEC",
+        "minAS": 24,
+        "requirements": {
+          "Mathematics": 50,
+          "Physical Sciences": 50,
+          "English": 40
+        },
+        "jobs": [
+          "Electrical Engineering Technician",
+          "Electronics Assistant",
+          "Maintenance Technician"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Diploma in Civil Engineering",
+        "code": "DIPCIV",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Civil Engineering Technologist",
+          "Site Supervisor",
+          "CAD Technician"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Mechanical Engineering",
+        "code": "DIPMECH",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Mechanical Engineering Technologist",
+          "Design Technician",
+          "Maintenance Supervisor"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Electrical Engineering",
+        "code": "DIPELEC",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Electrical Engineering Technologist",
+          "Electronics Technician",
+          "Power Systems Technician"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Industrial Engineering",
+        "code": "DIPIND",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Industrial Engineering Technologist",
+          "Process Improvement Specialist",
+          "Quality Control Technician"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Diploma"
+      },
+      {
+        "name": "Bachelor of Engineering Technology in Civil Engineering",
+        "code": "BENTCIV",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Civil Engineering Technologist",
+          "Structural Designer",
+          "Project Coordinator"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Engineering in Civil Engineering",
+        "code": "BENGCE",
+        "minAS": 40,
+        "requirements": {
+          "Mathematics": 70,
+          "Physical Sciences": 70,
+          "English": 50
+        },
+        "jobs": [
+          "Civil Engineer",
+          "Structural Engineer",
+          "Project Manager",
+          "Construction Manager"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Engineering in Mechanical Engineering",
+        "code": "BENGME",
+        "minAS": 40,
+        "requirements": {
+          "Mathematics": 70,
+          "Physical Sciences": 70,
+          "English": 50
+        },
+        "jobs": [
+          "Mechanical Engineer",
+          "Design Engineer",
+          "Maintenance Manager",
+          "Project Engineer"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Engineering in Electrical Engineering",
+        "code": "BENGEE",
+        "minAS": 40,
+        "requirements": {
+          "Mathematics": 70,
+          "Physical Sciences": 70,
+          "English": 50
+        },
+        "jobs": [
+          "Electrical Engineer",
+          "Electronics Engineer",
+          "Power Systems Engineer",
+          "Control Systems Engineer"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Engineering in Industrial Engineering",
+        "code": "BENGIE",
+        "minAS": 40,
+        "requirements": {
+          "Mathematics": 70,
+          "Physical Sciences": 70,
+          "English": 50
+        },
+        "jobs": [
+          "Industrial Engineer",
+          "Process Engineer",
+          "Quality Engineer",
+          "Operations Manager"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Architecture",
+        "code": "BARCH",
+        "minAS": 36,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Architect",
+          "Urban Designer",
+          "Project Manager",
+          "Heritage Consultant"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Town and Regional Planning",
+        "code": "BTRP",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Town Planner",
+          "Urban Designer",
+          "Development Planner",
+          "Environmental Planner"
+        ],
+        "campus": "North",
+        "faculty": "Engineering, Built Environment and Technology",
+        "level": "Bachelor's Degree"
+      },
+
+      // FACULTY OF HEALTH SCIENCES
+      {
+        "name": "Higher Certificate in Emergency Medical Care",
+        "code": "HCEMC",
+        "minAS": 24,
+        "requirements": {
+          "Mathematics": 40,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Emergency Care Assistant",
+          "Ambulance Assistant",
+          "First Responder"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Diploma in Nursing",
+        "code": "DIPNUR",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 40,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Registered Nurse",
+          "Community Health Nurse",
+          "Clinic Manager"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Emergency Medical Care",
+        "code": "DIPEMC",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Emergency Care Practitioner",
+          "Paramedic",
+          "Ambulance Service Manager"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Diploma"
+      },
+      {
+        "name": "Bachelor of Nursing",
+        "code": "BNurs",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Registered Nurse",
+          "Nurse Educator",
+          "Clinical Nurse Specialist",
+          "Public Health Nurse"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Pharmacy",
+        "code": "BPharm",
+        "minAS": 38,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Pharmacist",
+          "Pharmaceutical Researcher",
+          "Clinical Pharmacist",
+          "Regulatory Affairs Specialist"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Medical Science in Anatomy",
+        "code": "BMSANA",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Medical Researcher",
+          "Anatomy Lecturer",
+          "Laboratory Technologist"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Medical Science in Physiology",
+        "code": "BMSPHY",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Physiology Researcher",
+          "Medical Scientist",
+          "Laboratory Manager"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Sport Science",
+        "code": "BSPORTSCI",
+        "minAS": 28,
+        "requirements": {
+          "Mathematics": 40,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Sports Scientist",
+          "Fitness Trainer",
+          "Sports Coach",
+          "Rehabilitation Specialist"
+        ],
+        "campus": "Health Sciences",
+        "faculty": "Health Sciences",
+        "level": "Bachelor's Degree"
+      },
+
+      // FACULTY OF HUMANITIES
+      {
+        "name": "Higher Certificate in Music",
+        "code": "HCMUS",
+        "minAS": 22,
+        "requirements": {
+          "English": 40
+        },
+        "jobs": [
+          "Music Teacher Assistant",
+          "Choir Director",
+          "Music Performer"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Diploma in Public Relations Management",
+        "code": "DIPPR",
+        "minAS": 26,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Public Relations Assistant",
+          "Communications Officer",
+          "Media Relations Assistant"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Journalism",
+        "code": "DIPJOUR",
+        "minAS": 26,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Journalist",
+          "Content Writer",
+          "Media Assistant"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Language Practice",
+        "code": "DIPLANG",
+        "minAS": 26,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Translator",
+          "Interpreter",
+          "Language Editor"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Diploma"
+      },
+      {
+        "name": "Bachelor of Arts",
+        "code": "BA",
+        "minAS": 28,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Researcher",
+          "Writer",
+          "Communications Officer",
+          "Public Servant"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Social Science",
+        "code": "BSSC",
+        "minAS": 28,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Social Researcher",
+          "Policy Analyst",
+          "Community Developer",
+          "Social Worker"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Arts in Psychology",
+        "code": "BAPSYCH",
+        "minAS": 32,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Counselor",
+          "Human Resources Specialist",
+          "Research Assistant",
+          "Community Worker"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Social Work",
+        "code": "BSW",
+        "minAS": 30,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Social Worker",
+          "Community Developer",
+          "Counselor",
+          "Child Protection Officer"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Education (Senior Phase and FET)",
+        "code": "BED",
+        "minAS": 28,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Teacher",
+          "Education Specialist",
+          "Curriculum Developer",
+          "Education Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Music",
+        "code": "BMUS",
+        "minAS": 28,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Musician",
+          "Music Teacher",
+          "Composer",
+          "Sound Engineer"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Journalism",
+        "code": "BJOURN",
+        "minAS": 30,
+        "requirements": {
+          "English": 60
+        },
+        "jobs": [
+          "Journalist",
+          "Content Writer",
+          "Media Producer",
+          "Communications Officer"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Arts in Communication Science",
+        "code": "BACOMM",
+        "minAS": 30,
+        "requirements": {
+          "English": 50
+        },
+        "jobs": [
+          "Communications Officer",
+          "Public Relations Practitioner",
+          "Media Planner",
+          "Content Creator"
+        ],
+        "campus": "South",
+        "faculty": "Humanities",
+        "level": "Bachelor's Degree"
+      },
+
+      // FACULTY OF LAW
+      {
+        "name": "Bachelor of Laws",
+        "code": "LLB",
+        "minAS": 36,
+        "requirements": {
+          "English": 60
+        },
+        "jobs": [
+          "Lawyer",
+          "Legal Advisor",
+          "Prosecutor",
+          "Corporate Counsel"
+        ],
+        "campus": "South",
+        "faculty": "Law",
+        "level": "Bachelor's Degree"
+      },
+
+      // FACULTY OF SCIENCE
+      {
+        "name": "Higher Certificate in Animal Production",
+        "code": "HCANIM",
+        "minAS": 22,
+        "requirements": {
+          "Mathematics": 40,
+          "Life Sciences": 50,
+          "English": 40
+        },
+        "jobs": [
+          "Farm Assistant",
+          "Animal Husbandry Assistant",
+          "Livestock Assistant"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Higher Certificate"
+      },
+      {
+        "name": "Diploma in Agriculture",
+        "code": "DIPAGR",
+        "minAS": 26,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Agricultural Technician",
+          "Farm Manager",
+          "Crop Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Diploma"
+      },
+      {
+        "name": "Diploma in Nature Conservation",
+        "code": "DIPCON",
+        "minAS": 26,
+        "requirements": {
+          "Mathematics": 40,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Conservation Officer",
+          "Park Ranger",
+          "Environmental Educator"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Diploma"
+      },
+      {
+        "name": "Bachelor of Science",
+        "code": "BSC",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "Physical Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Research Scientist",
+          "Laboratory Technologist",
+          "Science Teacher",
+          "Environmental Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Computer Science",
+        "code": "BSCCOMSCI",
+        "minAS": 34,
+        "requirements": {
+          "Mathematics": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Software Developer",
+          "Systems Analyst",
+          "Data Scientist",
+          "IT Consultant"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Information Technology",
+        "code": "BSCIT",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 50,
+          "English": 50
+        },
+        "jobs": [
+          "IT Support Specialist",
+          "Network Administrator",
+          "Database Administrator",
+          "Web Developer"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Environmental Science",
+        "code": "BSCENV",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 50,
+          "English": 50
+        },
+        "jobs": [
+          "Environmental Scientist",
+          "Conservation Officer",
+          "Environmental Consultant",
+          "Sustainability Specialist"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Marine Biology",
+        "code": "BSCMARBIO",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Marine Biologist",
+          "Aquaculture Specialist",
+          "Marine Conservationist",
+          "Research Scientist"
+        ],
+        "campus": "Ocean Sciences",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Chemistry",
+        "code": "BSCCHEM",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Chemist",
+          "Analytical Chemist",
+          "Quality Control Chemist",
+          "Research Scientist"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Physics",
+        "code": "BSCPHY",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Physicist",
+          "Research Scientist",
+          "Medical Physicist",
+          "Engineering Physicist"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Mathematics",
+        "code": "BSCMATH",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 70,
+          "English": 50
+        },
+        "jobs": [
+          "Mathematician",
+          "Data Analyst",
+          "Actuary",
+          "Quantitative Analyst"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Statistics",
+        "code": "BSCSTAT",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Statistician",
+          "Data Analyst",
+          "Research Analyst",
+          "Business Intelligence Analyst"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Biotechnology",
+        "code": "BSCBIOT",
+        "minAS": 34,
+        "requirements": {
+          "Mathematics": 60,
+          "Life Sciences": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Biotechnologist",
+          "Research Scientist",
+          "Quality Control Analyst",
+          "Biotech Product Developer"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Microbiology",
+        "code": "BSCMICRO",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Microbiologist",
+          "Laboratory Manager",
+          "Quality Control Specialist",
+          "Research Scientist"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Zoology",
+        "code": "BSCZOOL",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Zoologist",
+          "Wildlife Biologist",
+          "Conservation Officer",
+          "Animal Researcher"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Botany",
+        "code": "BSCBOT",
+        "minAS": 30,
+        "requirements": {
+          "Mathematics": 50,
+          "Life Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Botanist",
+          "Plant Scientist",
+          "Horticulturist",
+          "Conservation Biologist"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Geology",
+        "code": "BSCGEO",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Geologist",
+          "Mining Geologist",
+          "Environmental Geologist",
+          "Geotechnical Engineer"
+        ],
+        "campus": "South",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      },
+      {
+        "name": "Bachelor of Science in Oceanography",
+        "code": "BSCOCEAN",
+        "minAS": 32,
+        "requirements": {
+          "Mathematics": 60,
+          "Physical Sciences": 60,
+          "English": 50
+        },
+        "jobs": [
+          "Oceanographer",
+          "Marine Scientist",
+          "Coastal Manager",
+          "Marine Policy Advisor"
+        ],
+        "campus": "Ocean Sciences",
+        "faculty": "Science",
+        "level": "Bachelor's Degree"
+      }
+    ];
+
+    // Common subjects for NMU
+    const commonSubjects = [
+      "English",
+      "Mathematics",
+      "Mathematical Literacy",
+      "Physical Sciences",
+      "Life Sciences",
+      "Accounting",
+      "Economics",
+      "Business Studies",
+      "Geography",
+      "History",
+      "Life Orientation",
+      "Information Technology",
+      "Computer Applications Technology",
+      "Agricultural Sciences",
+      "Tourism",
+      "Dramatic Arts",
+      "Visual Arts",
+      "Music",
+      "Other"
+    ];
+
+    // grab references
+    const searchInput = document.getElementById('search');
+    const courseSelect = document.getElementById('course');
+    const subjectsContainer = document.getElementById('subjectsContainer');
+    const resultBox = document.getElementById('resultBox');
+    const jobsBox = document.getElementById('jobsBox');
+    const noticeBox = document.getElementById('noticeBox');
+    const asResultDiv = document.getElementById('asResult');
+    const calculatedAS = document.getElementById('calculatedAS');
+
+    // User's subjects data
+    let userSubjects = [];
+
+    // Populate dropdown initially
+    function populateCourseSelect(filter = '') {
+      courseSelect.innerHTML = '';
+      courses.forEach((course, idx) => {
+        if (course.name.toLowerCase().includes(filter)) {
+          const opt = document.createElement('option');
+          opt.value = idx;
+          opt.textContent = `${course.name} (${course.level}) - ${course.faculty}`;
+          courseSelect.appendChild(opt);
+        }
+      });
+    }
+
+    // Initialize default subjects
+    function initializeDefaultSubjects() {
+      // Add some default subjects
+      addSubject('English');
+      addSubject('Mathematics');
+      addSubject('Life Orientation');
+    }
+
+    // Add a subject row
+    function addSubject(subjectName = '') {
+      const row = document.createElement('div');
+      row.className = 'subject-row';
+      
+      const subjectSelect = document.createElement('select');
+      commonSubjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject;
+        option.textContent = subject;
+        if (subject === subjectName) {
+          option.selected = true;
+        }
+        subjectSelect.appendChild(option);
+      });
+      
+      const markInput = document.createElement('input');
+      markInput.type = 'number';
+      markInput.min = 0;
+      markInput.max = 100;
+      markInput.placeholder = 'Mark %';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.onclick = function() {
+        subjectsContainer.removeChild(row);
+        calculateAS();
+      };
+      
+      // Add event listeners to update AS when values change
+      subjectSelect.addEventListener('change', calculateAS);
+      markInput.addEventListener('input', calculateAS);
+      
+      row.appendChild(subjectSelect);
+      row.appendChild(markInput);
+      row.appendChild(removeBtn);
+      subjectsContainer.appendChild(row);
+      
+      // Calculate AS after adding
+      calculateAS();
+    }
+
+    // Calculate AS based on subject marks (average of best 6 excluding Life Orientation)
+    function calculateAS() {
+      const subjectRows = subjectsContainer.querySelectorAll('.subject-row');
+      let marks = [];
+      
+      subjectRows.forEach(row => {
+        const subjectSelect = row.querySelector('select');
+        const markInput = row.querySelector('input');
+        const subjectName = subjectSelect.value;
+        const mark = parseInt(markInput.value, 10);
+        
+        if (!isNaN(mark) && mark >= 0 && mark <= 100) {
+          // Store subject data for eligibility checking
+          userSubjects.push({
+            name: subjectName,
+            mark: mark
+          });
+          
+          // Only include in AS calculation if not Life Orientation
+          if (subjectName !== "Life Orientation") {
+            marks.push(mark);
+          }
+        }
+      });
+      
+      if (marks.length > 0) {
+        // Sort marks in descending order and take top 6
+        marks.sort((a, b) => b - a);
+        const bestMarks = marks.slice(0, 6);
+        const as = Math.round(bestMarks.reduce((a, b) => a + b, 0) / bestMarks.length);
+        calculatedAS.textContent = as;
+        asResultDiv.style.display = 'block';
+      } else {
+        asResultDiv.style.display = 'none';
+      }
+    }
+
+    // Search handler
+    searchInput.addEventListener('input', () => {
+      populateCourseSelect(searchInput.value.trim().toLowerCase());
+    });
+
+    // initialize
+    populateCourseSelect();
+    initializeDefaultSubjects();
+
+    // click-limit logic
+    let eligibilityClicks = parseInt(localStorage.getItem('eligibilityClicks') || '0', 10);
+    let jobsClicks = parseInt(localStorage.getItem('jobsClicks') || '0', 10);
+    const maxClicks = Math.random() < 0.5 ? 8 : 12;
+
+    function handleButtonClick(btnId, fn) {
+      if (btnId === 'eligibilityBtn') {
+        eligibilityClicks++;
+        localStorage.setItem('eligibilityClicks', eligibilityClicks);
+        if (eligibilityClicks >= maxClicks) {
+          return showAdButton(btnId, fn);
+        }
+      } else {
+        jobsClicks++;
+        localStorage.setItem('jobsClicks', jobsClicks);
+        if (jobsClicks >= maxClicks) {
+          return showAdButton(btnId, fn);
+        }
+      }
+      fn();
+    }
+
+    function showAdButton(origId, fn) {
+      const origBtn = document.getElementById(origId);
+      const adBtn = document.createElement('button');
+      adBtn.textContent = 'Click Here & Wait 8s to Get Features Back';
+      adBtn.style.backgroundColor = 'red';
+      adBtn.onclick = () => {
+        window.open(adUrl, '_blank');
+        noticeBox.textContent = 'Please wait 8 seconds then return to this tab. Features will be back.';
+        setTimeout(() => {
+          noticeBox.textContent = '';
+          adBtn.replaceWith(origBtn);
+          eligibilityClicks = jobsClicks = 0;
+          localStorage.setItem('eligibilityClicks', '0');
+          localStorage.setItem('jobsClicks', '0');
+        }, 8000);
+      };
+      origBtn.replaceWith(adBtn);
+    }
+
+    function checkEligibility() {
+      const courseIndex = courseSelect.value;
+      if (!courseIndex) {
+        resultBox.innerHTML = `<p style="color: red;">Please select a course first.</p>`;
+        return;
+      }
+      
+      const course = courses[courseIndex];
+      const userAS = parseInt(calculatedAS.textContent, 10) || 0;
+      
+      if (userAS === 0) {
+        resultBox.innerHTML = `<p style="color: red;">Please enter your subject marks to calculate your AS first.</p>`;
+        return;
+      }
+      
+      let subjectResults = [];
+      let anyBelow = false;
+      let missingSubjects = [];
+      
+      // Check subject requirements
+      for (const requiredSubject in course.requirements) {
+        const requiredMark = course.requirements[requiredSubject];
+        const userSubject = userSubjects.find(sub => 
+          sub.name.toLowerCase().includes(requiredSubject.toLowerCase()) || 
+          requiredSubject.toLowerCase().includes(sub.name.toLowerCase())
+        );
+        
+        let category, color;
+        if (userSubject) {
+          const userMark = userSubject.mark;
+          const diff = userMark - requiredMark;
+          
+          if (userMark >= requiredMark) {
+            if (diff <= 5) { category = 'Minimum Met'; color = 'orange'; }
+            else if (diff <= 15) { category = 'Moderate Match'; color = 'gold'; }
+            else if (diff <= 30) { category = 'Strong Match'; color = 'lightgreen'; }
+            else { category = 'Very Strong Match'; color = 'green'; }
+          } else {
+            category = 'Below Requirement'; color = 'red'; anyBelow = true;
+          }
+          
+          subjectResults.push(`<li style="color:${color}">${requiredSubject}: ${userMark}% (Required: ${requiredMark}%) — ${category}</li>`);
+        } else {
+          // Subject not found in user's subjects
+          category = 'Subject Not Found'; color = 'red'; anyBelow = true;
+          missingSubjects.push(requiredSubject);
+          subjectResults.push(`<li style="color:${color}">${requiredSubject}: Not found in your subjects — ${category}</li>`);
+        }
+      }
+      
+      // AS messaging
+      const asDiff = userAS - course.minAS;
+      let asMsg, asScore;
+      if (asDiff >= 0) {
+        if (asDiff <= 2) asMsg = 'AS: Just Met';
+        else if (asDiff <= 5) asMsg = 'AS: Moderate';
+        else if (asDiff <= 10) asMsg = 'AS: Strong';
+        else asMsg = 'AS: Very Strong';
+        asScore = Math.min(asDiff * 5 + 40, 95);
+      } else {
+        asMsg = 'AS: Below Requirement';
+        asScore = 25;
+      }
+      
+      if (anyBelow) asScore = Math.min(asScore, 40);
+      
+      // Calculate success rate
+      const subjectScore = anyBelow ? 40 : 80;
+      const finalPct = Math.min((asScore + subjectScore) / 2, 99).toFixed(1);
+      
+      let missingSubjectsMsg = '';
+      if (missingSubjects.length > 0) {
+        missingSubjectsMsg = `<p style="color: red;"><strong>Missing required subjects: ${missingSubjects.join(', ')}</strong></p>`;
+      }
+      
+      resultBox.innerHTML = `
+        <h3>Results for ${course.name}</h3>
+        <p><strong>Faculty:</strong> ${course.faculty}</p>
+        <p><strong>Level:</strong> ${course.level}</p>
+        <p><strong>Your AS:</strong> ${userAS} | <strong>Required AS:</strong> ${course.minAS}</p>
+        <p><strong>Subject Requirements:</strong></p>
+        <ul>${subjectResults.join('')}</ul>
+        ${missingSubjectsMsg}
+        <p><strong>${asMsg}</strong></p>
+        <p><strong>Estimated success rate: ${finalPct}%</strong></p>
+        <p><strong>Campus: ${course.campus}</strong></p>
+      `;
+    }
+
+    function showJobs() {
+      const courseIndex = courseSelect.value;
+      if (!courseIndex) {
+        jobsBox.innerHTML = `<p style="color: red;">Please select a course first.</p>`;
+        return;
+      }
+      
+      const course = courses[courseIndex];
+      if (!course.jobs || course.jobs.length === 0) {
+        jobsBox.innerHTML = `<p>No job information available for ${course.name}.</p>`;
+        return;
+      }
+      jobsBox.innerHTML = `
+        <h3>Possible Career Paths for ${course.name}</h3>
+        <p><strong>Level:</strong> ${course.level}</p>
+        <ul>${course.jobs.map(j=>`<li>${j}</li>`).join('')}</ul>
+      `;
+    }
+
+    // attach to buttons
+    document.getElementById('eligibilityBtn')
+            .addEventListener('click', () => handleButtonClick('eligibilityBtn', checkEligibility));
+    document.getElementById('jobsBtn')
+            .addEventListener('click', () => handleButtonClick('jobsBtn', showJobs));
+    document.getElementById('addSubjectBtn')
+            .addEventListener('click', () => addSubject());
+  </script>
+</body>
+</html>
