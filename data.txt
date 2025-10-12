@@ -1,0 +1,1239 @@
+================================================================================
+📚 GUTENBERG BOOK LIBRARY COLLECTION
+================================================================================
+Generated on: 2025-10-12 17:36:49
+Total books: 86
+================================================================================
+
+
+============================================================
+🎯 GENRE: ART (4 books)
+============================================================
+
+📖 BOOK 1: Ulysses
+   👤 Author: Joyce, James
+   🆔 ID: 4300
+   📊 Downloads: 24328
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/4300/pg4300.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/4300.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Alienation (Social psychology) -- Fiction, Artists -- Fiction, City and town life -- Fiction
+   📚 Bookshelves: Banned Books List from the American Library Association, Banned Books from Anne Haight's list
+
+--------------------------------------------------
+
+📖 BOOK 2: Le Morte d'Arthur: Volume 1
+   👤 Author: Malory, Thomas, Sir
+   🆔 ID: 1251
+   📊 Downloads: 22109
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1251/pg1251.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/files/1251/1251-0.txt
+   📄 Format: text/plain; charset=utf-8
+   🏷️  Subjects: Arthur, King -- Legends, Arthurian romances
+   📚 Bookshelves: Arthurian Legends, Category: British Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: The Hound of the Baskervilles
+   👤 Author: Doyle, Arthur Conan
+   🆔 ID: 2852
+   📊 Downloads: 18959
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2852/pg2852.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/2852.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Blessing and cursing -- Fiction, Dartmoor (England) -- Fiction, Detective and mystery stories
+   📚 Bookshelves: Bestsellers, American, 1895-1923, Category: British Literature
+
+--------------------------------------------------
+
+📖 BOOK 4: A Portrait of the Artist as a Young Man
+   👤 Author: Joyce, James
+   🆔 ID: 4217
+   📊 Downloads: 15722
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/4217/pg4217.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/4217.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Artists -- Fiction, Autobiographical fiction, Bildungsromans
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: BIOGRAPHY (4 books)
+============================================================
+
+📖 BOOK 1: My Life — Volume 1
+   👤 Author: Wagner, Richard
+   🆔 ID: 5197
+   📊 Downloads: 40290
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/5197/pg5197.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/5197.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Composers -- Germany -- Biography, Wagner, Richard, 1813-1883
+   📚 Bookshelves: Category: Biographies, Category: Music
+
+--------------------------------------------------
+
+📖 BOOK 2: The Confessions of St. Augustine
+   👤 Author: Augustine, Saint, Bishop of Hippo
+   🆔 ID: 3296
+   📊 Downloads: 29582
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/3296/pg3296.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/3296.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Augustine, Saint, Bishop of Hippo, Bishops -- Algeria -- Hippo (Extinct city) -- Biography, Catholic Church -- Bishops -- Biography
+   📚 Bookshelves: Category: Biographies, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: Narrative of the Life of Frederick Douglass, an American Slave
+   👤 Author: Douglass, Frederick
+   🆔 ID: 23
+   📊 Downloads: 28680
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/23/pg23.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/23.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Abolitionists -- United States -- Biography, African American abolitionists -- Biography, Douglass, Frederick, 1818-1895
+   📚 Bookshelves: African American Writers, Category: Biographies
+
+--------------------------------------------------
+
+📖 BOOK 4: The Interesting Narrative of the Life of Olaudah Equiano, Or Gustavus Vassa, The African: Written By Himself
+   👤 Author: Equiano, Olaudah
+   🆔 ID: 15399
+   📊 Downloads: 26220
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/15399/pg15399.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/15399.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Enslaved persons -- Great Britain -- Biography, Enslaved persons -- United States -- Biography, Equiano, Olaudah, 1745-1797
+   📚 Bookshelves: Africa, Category: Biographies
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: BUSINESS (5 books)
+============================================================
+
+📖 BOOK 1: The art of money getting : $b or, golden rules for making money
+   👤 Author: Barnum, P. T. (Phineas Taylor)
+   🆔 ID: 8581
+   📊 Downloads: 6790
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/8581/pg8581.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/8581.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Success, Success in business
+   📚 Bookshelves: Category: Business/Management, Category: How To ...
+
+--------------------------------------------------
+
+📖 BOOK 2: The Gilded Age: A Tale of Today
+   👤 Author: Twain, Mark
+   🆔 ID: 3178
+   📊 Downloads: 6572
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/3178/pg3178.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/3178.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Businessmen -- Fiction, Legislators -- Fiction, Political corruption -- Fiction
+   📚 Bookshelves: Category: American Literature, Category: Novels
+
+--------------------------------------------------
+
+📖 BOOK 3: The Science of Getting Rich
+   👤 Author: Wattles, W. D. (Wallace Delois)
+   🆔 ID: 59844
+   📊 Downloads: 4461
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/59844/pg59844.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/59844.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: New Thought, Success, Wealth
+   📚 Bookshelves: Category: Business/Management, Category: How To ...
+
+--------------------------------------------------
+
+📖 BOOK 4: Mr. Honey's Large Business Dictionary (English-German)
+   👤 Author: Honig, Winfried
+   🆔 ID: 3221
+   📊 Downloads: 3787
+   🌐 Language: de
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/3221/pg3221.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/3221.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: English language -- Dictionaries -- German, German language -- Dictionaries -- English
+   📚 Bookshelves: Category: Business/Management, Category: Encyclopedias/Dictionaries/Reference
+
+--------------------------------------------------
+
+📖 BOOK 5: One Thousand Ways to Make Money
+   👤 Author: Fox, Page
+   🆔 ID: 56006
+   📊 Downloads: 3459
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/56006/pg56006.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/56006.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Business, Formulas, recipes, etc., Occupations
+   📚 Bookshelves: Category: Business/Management, Category: How To ...
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: COOKING (5 books)
+============================================================
+
+📖 BOOK 1: Cookery and Dining in Imperial Rome
+   👤 Author: Apicius
+   🆔 ID: 29728
+   📊 Downloads: 12179
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/29728/pg29728.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/29728.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Cookbooks, Cooking, Roman -- Early works to 1800
+   📚 Bookshelves: Category: Cooking & Drinking, Category: History - Ancient
+
+--------------------------------------------------
+
+📖 BOOK 2: All About Coffee
+   👤 Author: Ukers, William H. (William Harrison)
+   🆔 ID: 28500
+   📊 Downloads: 5065
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/28500/pg28500.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/28500.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Coffee, Coffee Industry, Drinking customs
+   📚 Bookshelves: Category: Cooking & Drinking, Category: History - Other
+
+--------------------------------------------------
+
+📖 BOOK 3: The Art of Perfumery, and Methods of Obtaining the Odors of Plants: With Instructions for the Manufacture of Perfumes for the Handkerchief, Scented Powders, Odorous Vinegars, Dentifrices, Pomatums, Cosmetics, Perfumed Soap, Etc., to which is Added an Appendix on Preparing Artificial Fruit-Essences, Etc.
+   👤 Author: Piesse, G. W. Septimus (George William Septimus)
+   🆔 ID: 16378
+   📊 Downloads: 4340
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/16378/pg16378.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/16378.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Cosmetics, Perfumes
+   📚 Bookshelves: Category: Cooking & Drinking, Category: History - Other
+
+--------------------------------------------------
+
+📖 BOOK 4: The Pantropheon; Or, History of Food, Its Preparation, from the Earliest Ages of the World
+   👤 Author: Soyer, Alexis
+   🆔 ID: 51259
+   📊 Downloads: 2788
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/51259/pg51259.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/51259.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Cooking, Food, Gastronomy
+   📚 Bookshelves: Category: Cooking & Drinking, Category: History - Other
+
+--------------------------------------------------
+
+📖 BOOK 5: The Book of Household Management
+   👤 Author: Beeton, Mrs. (Isabella Mary)
+   🆔 ID: 10136
+   📊 Downloads: 2580
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/10136/pg10136.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/10136.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Cooking, English, Home economics
+   📚 Bookshelves: Category: Cooking & Drinking, Category: Health & Medicine
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: CRIME (3 books)
+============================================================
+
+📖 BOOK 1: Crime and Punishment
+   👤 Author: Dostoyevsky, Fyodor
+   🆔 ID: 2554
+   📊 Downloads: 39668
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2554/pg2554.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/2554.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Crime -- Psychological aspects -- Fiction, Detective and mystery stories, Murder -- Fiction
+   📚 Bookshelves: Best Books Ever Listings, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: The Works of Edgar Allan Poe — Volume 2
+   👤 Author: Poe, Edgar Allan
+   🆔 ID: 2148
+   📊 Downloads: 37003
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2148/pg2148.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/2148.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: American fiction -- 19th century, Fantasy fiction, Horror tales, American
+   📚 Bookshelves: Category: American Literature, Category: Crime, Thrillers and Mystery
+
+--------------------------------------------------
+
+📖 BOOK 3: The Adventures of Sherlock Holmes
+   👤 Author: Doyle, Arthur Conan
+   🆔 ID: 1661
+   📊 Downloads: 31411
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1661.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Detective and mystery stories, English, Holmes, Sherlock (Fictitious character) -- Fiction, Private investigators -- England -- Fiction
+   📚 Bookshelves: Banned Books from Anne Haight's list, Category: British Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: FAIRY TALES (4 books)
+============================================================
+
+📖 BOOK 1: The Thousand and One Nights, Vol. I.: Commonly Called the Arabian Nights' Entertainments
+   👤 Author: Unknown
+   🆔 ID: 34206
+   📊 Downloads: 12042
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/34206/pg34206.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/34206.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Fairy tales, Tales -- Arab countries
+   📚 Bookshelves: Category: Classics of Literature, Category: Mythology, Legends & Folklore
+
+--------------------------------------------------
+
+📖 BOOK 2: The Happy Prince, and Other Tales
+   👤 Author: Wilde, Oscar
+   🆔 ID: 902
+   📊 Downloads: 8148
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/902/pg902.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/902.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Children's stories, English, Fairy tales, Short stories, English
+   📚 Bookshelves: Category: British Literature, Category: Children & Young Adult Reading
+
+--------------------------------------------------
+
+📖 BOOK 3: Fairy Tales of Hans Christian Andersen
+   👤 Author: Andersen, H. C. (Hans Christian)
+   🆔 ID: 27200
+   📊 Downloads: 6121
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/27200/pg27200.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/27200.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Children's stories, Danish -- Translations into English, Fairy tales, Fairy tales -- Denmark
+   📚 Bookshelves: Category: Children & Young Adult Reading, Category: Mythology, Legends & Folklore
+
+--------------------------------------------------
+
+📖 BOOK 4: The Fairy Tales of Charles Perrault
+   👤 Author: Perrault, Charles
+   🆔 ID: 29021
+   📊 Downloads: 5867
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/29021/pg29021.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/29021.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Fairy tales
+   📚 Bookshelves: Category: Classics of Literature, Category: French Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: FICTION (5 books)
+============================================================
+
+📖 BOOK 1: Frankenstein; Or, The Modern Prometheus
+   👤 Author: Shelley, Mary Wollstonecraft
+   🆔 ID: 84
+   📊 Downloads: 148578
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/84.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Frankenstein's monster (Fictitious character) -- Fiction, Frankenstein, Victor (Fictitious character) -- Fiction, Gothic fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: Moby Dick; Or, The Whale
+   👤 Author: Melville, Herman
+   🆔 ID: 2701
+   📊 Downloads: 127990
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2701/pg2701.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/2701.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Adventure stories, Ahab, Captain (Fictitious character) -- Fiction, Mentally ill -- Fiction
+   📚 Bookshelves: Best Books Ever Listings, Category: Adventure
+
+--------------------------------------------------
+
+📖 BOOK 3: Pride and Prejudice
+   👤 Author: Austen, Jane
+   🆔 ID: 1342
+   📊 Downloads: 79774
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1342.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Courtship -- Fiction, Domestic fiction, England -- Fiction
+   📚 Bookshelves: Best Books Ever Listings, Category: British Literature
+
+--------------------------------------------------
+
+📖 BOOK 4: Alice's Adventures in Wonderland
+   👤 Author: Carroll, Lewis
+   🆔 ID: 11
+   📊 Downloads: 72175
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/11.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Alice (Fictitious character from Carroll) -- Juvenile fiction, Children's stories, Fantasy fiction
+   📚 Bookshelves: Category: British Literature, Category: Children & Young Adult Reading
+
+--------------------------------------------------
+
+📖 BOOK 5: A Room with a View
+   👤 Author: Forster, E. M. (Edward Morgan)
+   🆔 ID: 2641
+   📊 Downloads: 58157
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2641/pg2641.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/2641.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: British -- Italy -- Fiction, England -- Fiction, Florence (Italy) -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Novels
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: GOTHIC (1 books)
+============================================================
+
+📖 BOOK 1: The Adventures of Ferdinand Count Fathom — Complete
+   👤 Author: Smollett, T. (Tobias)
+   🆔 ID: 6761
+   📊 Downloads: 41681
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/6761/pg6761.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/6761.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Adventure stories, Gothic fiction
+   📚 Bookshelves: Best Books Ever Listings, Category: British Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: HISTORY (3 books)
+============================================================
+
+📖 BOOK 1: The Scarlet Letter
+   👤 Author: Hawthorne, Nathaniel
+   🆔 ID: 25344
+   📊 Downloads: 48172
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/25344/pg25344.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/25344.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Adultery -- Fiction, Boston (Mass.) -- History -- Colonial period, ca. 1600-1775 -- Fiction, Clergy -- Fiction
+   📚 Bookshelves: Banned Books from Anne Haight's list, Category: American Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: Twenty years after
+   👤 Author: Dumas, Alexandre
+   🆔 ID: 1259
+   📊 Downloads: 41426
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1259/pg1259.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1259.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: France -- History -- Louis XIV, 1643-1715 -- Fiction
+   📚 Bookshelves: Adventure, Category: Adventure
+
+--------------------------------------------------
+
+📖 BOOK 3: Simple Sabotage Field Manual
+   👤 Author: United States. Office of Strategic Services
+   🆔 ID: 26184
+   📊 Downloads: 41036
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/26184/pg26184.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/26184.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Sabotage
+   📚 Bookshelves: Category: History - Modern (1750+), Category: History - Warfare
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: MUSIC (4 books)
+============================================================
+
+📖 BOOK 1: The Birth of Tragedy; or, Hellenism and Pessimism
+   👤 Author: Nietzsche, Friedrich Wilhelm
+   🆔 ID: 51356
+   📊 Downloads: 7164
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/51356/pg51356.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/51356.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Aesthetics, Greek drama (Tragedy) -- History and criticism -- Theory, etc., Music -- Philosophy and aesthetics
+   📚 Bookshelves: Category: Classics of Literature, Category: Philosophy & Ethics
+
+--------------------------------------------------
+
+📖 BOOK 2: The Phantom of the Opera
+   👤 Author: Leroux, Gaston
+   🆔 ID: 175
+   📊 Downloads: 6233
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/175/pg175.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/175.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Composers -- Fiction, French fiction -- Translations into English, Horror tales
+   📚 Bookshelves: Category: Crime, Thrillers and Mystery, Category: French Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: The Life of Ludwig van Beethoven, Volume I
+   👤 Author: Thayer, Alexander Wheelock
+   🆔 ID: 43591
+   📊 Downloads: 4369
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/43591/pg43591.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/43591.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Beethoven, Ludwig van, 1770-1827
+   📚 Bookshelves: Category: Biographies, Category: History - European
+
+--------------------------------------------------
+
+📖 BOOK 4: Wine, Women, and Song: Mediaeval Latin Students' songs; Now first translated into English verse
+   👤 Author: Unknown
+   🆔 ID: 18044
+   📊 Downloads: 4259
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/18044/pg18044.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/18044.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Goliards -- Songs and music -- Texts, Songs, Latin (Medieval and modern) -- Translations into English, Students' songs -- Europe -- Texts
+   📚 Bookshelves: Category: History - Medieval/Middle Ages, Category: Poetry
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: MYTHOLOGY (2 books)
+============================================================
+
+📖 BOOK 1: Fables of La Fontaine — a New Edition, with Notes
+   👤 Author: La Fontaine, Jean de
+   🆔 ID: 7241
+   📊 Downloads: 37284
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/7241/pg7241.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/7241.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Fables, French -- Translations into English
+   📚 Bookshelves: Category: Classics of Literature, Category: French Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: The Legend of Sleepy Hollow
+   👤 Author: Irving, Washington
+   🆔 ID: 41
+   📊 Downloads: 28852
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/41/pg41.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/41.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Ghosts -- Fiction, New York (State) -- History -- 1775-1865 -- Fiction
+   📚 Bookshelves: Category: American Literature, Category: Mythology, Legends & Folklore
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: PHILOSOPHY (5 books)
+============================================================
+
+📖 BOOK 1: Leviathan
+   👤 Author: Hobbes, Thomas
+   🆔 ID: 3207
+   📊 Downloads: 45442
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/3207/pg3207.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/3207.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Political science -- Early works to 1800, State, The -- Early works to 1800
+   📚 Bookshelves: Category: History - Early Modern (c. 1450-1750), Category: Philosophy & Ethics
+
+--------------------------------------------------
+
+📖 BOOK 2: The Picture of Dorian Gray
+   👤 Author: Wilde, Oscar
+   🆔 ID: 174
+   📊 Downloads: 40031
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/174/pg174.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/174.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Appearance (Philosophy) -- Fiction, Conduct of life -- Fiction, Didactic fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: The Prince
+   👤 Author: Machiavelli, Niccolò
+   🆔 ID: 1232
+   📊 Downloads: 37432
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1232/pg1232.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1232.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Political ethics -- Early works to 1800, Political science -- Philosophy -- Early works to 1800, State, The -- Early works to 1800
+   📚 Bookshelves: Banned Books from Anne Haight's list, Category: History - Early Modern (c. 1450-1750)
+
+--------------------------------------------------
+
+📖 BOOK 4: Second Treatise of Government
+   👤 Author: Locke, John
+   🆔 ID: 7370
+   📊 Downloads: 37325
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/7370/pg7370.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/7370.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Liberty -- Early works to 1800, Political science -- Early works to 1800, Toleration -- Early works to 1800
+   📚 Bookshelves: Category: History - Early Modern (c. 1450-1750), Category: Philosophy & Ethics
+
+--------------------------------------------------
+
+📖 BOOK 5: Walden, and On The Duty Of Civil Disobedience
+   👤 Author: Thoreau, Henry David
+   🆔 ID: 205
+   📊 Downloads: 32291
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/205/pg205.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/205.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Authors, American -- 19th century -- Biography, Civil disobedience, Government, Resistance to
+   📚 Bookshelves: Category: American Literature, Category: Essays, Letters & Speeches
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: POETRY (5 books)
+============================================================
+
+📖 BOOK 1: Beowulf: An Anglo-Saxon Epic Poem
+   👤 Author: Unknown
+   🆔 ID: 16328
+   📊 Downloads: 62301
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/16328/pg16328.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/16328.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Dragons -- Poetry, Epic poetry, English (Old), Monsters -- Poetry
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: The Complete Works of William Shakespeare
+   👤 Author: Shakespeare, William
+   🆔 ID: 100
+   📊 Downloads: 57471
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/100/pg100.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/100.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: English drama -- Early modern and Elizabethan, 1500-1600
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: The Iliad
+   👤 Author: Homer
+   🆔 ID: 6130
+   📊 Downloads: 29161
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/6130/pg6130.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/6130.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Achilles (Mythological character) -- Poetry, Classical literature, Epic poetry, Greek -- Translations into English
+   📚 Bookshelves: Category: Classics of Literature, Category: Mythology, Legends & Folklore
+
+--------------------------------------------------
+
+📖 BOOK 4: The divine comedy
+   👤 Author: Dante Alighieri
+   🆔 ID: 8800
+   📊 Downloads: 24607
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/8800/pg8800.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/8800.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Epic poetry, Italian -- Translations into English, Italian poetry -- To 1400 -- Translations into English
+   📚 Bookshelves: Best Books Ever Listings, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 5: The Odyssey: Rendered into English prose for the use of those who cannot read the original
+   👤 Author: Homer
+   🆔 ID: 1727
+   📊 Downloads: 21916
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1727/pg1727.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1727.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Epic poetry, Greek -- Translations into English, Homer -- Translations into English, Odysseus, King of Ithaca (Mythological character)
+   📚 Bookshelves: Category: Classics of Literature, Category: Mythology, Legends & Folklore
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: PSYCHOLOGY (4 books)
+============================================================
+
+📖 BOOK 1: How to Observe: Morals and Manners
+   👤 Author: Martineau, Harriet
+   🆔 ID: 33944
+   📊 Downloads: 51437
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/33944/pg33944.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/33944.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Manners and customs, Observation (Psychology), Social psychology -- Methodology
+   📚 Bookshelves: Category: How To ..., Category: Sociology
+
+--------------------------------------------------
+
+📖 BOOK 2: History of Tom Jones, a Foundling
+   👤 Author: Fielding, Henry
+   🆔 ID: 6593
+   📊 Downloads: 41171
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/6593/pg6593.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/6593.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Bildungsromans, England -- Fiction, Foundlings -- Fiction
+   📚 Bookshelves: Banned Books from Anne Haight's list, Best Books Ever Listings
+
+--------------------------------------------------
+
+📖 BOOK 3: The Yellow Wallpaper
+   👤 Author: Gilman, Charlotte Perkins
+   🆔 ID: 1952
+   📊 Downloads: 36749
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1952/pg1952.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1952.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Feminist fiction, Married women -- Psychology -- Fiction, Mentally ill women -- Fiction
+   📚 Bookshelves: Category: American Literature, Category: Short Stories
+
+--------------------------------------------------
+
+📖 BOOK 4: Wuthering Heights
+   👤 Author: Brontë, Emily
+   🆔 ID: 768
+   📊 Downloads: 33677
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/768/pg768.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/768.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Domestic fiction, Foundlings -- Fiction, Heathcliff (Fictitious character : Brontë) -- Fiction
+   📚 Bookshelves: Best Books Ever Listings, Category: British Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: RELIGION (4 books)
+============================================================
+
+📖 BOOK 1: The lesser Key of Solomon, Goetia, the book of evil spirits : $b contains two hundred diagrams and seals for invocation and convocation of spirits, necromancy, witchcraft and black art
+   👤 Author: Unknown
+   🆔 ID: 72679
+   📊 Downloads: 18172
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/72679/pg72679.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/72679.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Magic, Occultism
+   📚 Bookshelves: Category: Religion/Spirituality
+
+--------------------------------------------------
+
+📖 BOOK 2: The King James Version of the Bible
+   👤 Author: Unknown
+   🆔 ID: 10
+   📊 Downloads: 16725
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/10/pg10.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/10.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Bible
+   📚 Bookshelves: Banned Books List from the American Library Association, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: Pascal's Pensées
+   👤 Author: Pascal, Blaise
+   🆔 ID: 18269
+   📊 Downloads: 14976
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/18269/pg18269.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/18269.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Apologetics -- Early works to 1800, Catholic Church -- Apologetic works -- Early works to 1800, Catholic Church -- Doctrines -- Early works to 1800
+   📚 Bookshelves: Banned Books from Anne Haight's list, Category: Essays, Letters & Speeches
+
+--------------------------------------------------
+
+📖 BOOK 4: The Prophet
+   👤 Author: Gibran, Kahlil
+   🆔 ID: 58585
+   📊 Downloads: 12523
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/58585/pg58585.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/58585.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Mysticism -- Poetry, Prose poems, American
+   📚 Bookshelves: Category: Philosophy & Ethics, Category: Poetry
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: ROMANCE (3 books)
+============================================================
+
+📖 BOOK 1: Romeo and Juliet
+   👤 Author: Shakespeare, William
+   🆔 ID: 1513
+   📊 Downloads: 85144
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1513/pg1513.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1513.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Conflict of generations -- Drama, Juliet (Fictitious character) -- Drama, Romeo (Fictitious character) -- Drama
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: The Blue Castle: a novel
+   👤 Author: Montgomery, L. M. (Lucy Maud)
+   🆔 ID: 67979
+   📊 Downloads: 46306
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/67979/pg67979.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/67979.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Canada -- History -- 1914-1945 -- Fiction, Choice (Psychology) -- Fiction, Love -- Fiction
+   📚 Bookshelves: Category: Novels, Category: Romance
+
+--------------------------------------------------
+
+📖 BOOK 3: Jane Eyre: An Autobiography
+   👤 Author: Brontë, Charlotte
+   🆔 ID: 1260
+   📊 Downloads: 45394
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1260/pg1260.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1260.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Bildungsromans, Charity-schools -- Fiction, Country homes -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: SATIRE (4 books)
+============================================================
+
+📖 BOOK 1: A Modest Proposal: For preventing the children of poor people in Ireland, from being a burden on their parents or country, and for making them beneficial to the publick
+   👤 Author: Swift, Jonathan
+   🆔 ID: 1080
+   📊 Downloads: 42253
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1080/pg1080.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1080.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Ireland -- Politics and government -- 18th century -- Humor, Political satire, English, Religious satire, English
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: Candide
+   👤 Author: Voltaire
+   🆔 ID: 19942
+   📊 Downloads: 12230
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/19942/pg19942.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/19942.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Optimism -- Fiction, Satire
+   📚 Bookshelves: Banned Books from Anne Haight's list, Best Books Ever Listings
+
+--------------------------------------------------
+
+📖 BOOK 3: Northanger Abbey
+   👤 Author: Austen, Jane
+   🆔 ID: 121
+   📊 Downloads: 8862
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/121/pg121.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/121.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Books and reading -- Fiction, England -- Fiction, England -- Social life and customs -- 19th century -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 4: Vanity Fair
+   👤 Author: Thackeray, William Makepeace
+   🆔 ID: 599
+   📊 Downloads: 8681
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/599/pg599.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/599.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: British -- Europe -- Fiction, England -- Fiction, Female friendship -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: SCIENCE (1 books)
+============================================================
+
+📖 BOOK 1: Dracula
+   👤 Author: Stoker, Bram
+   🆔 ID: 345
+   📊 Downloads: 43828
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/345/pg345.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/345.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Dracula, Count (Fictitious character) -- Fiction, Epistolary fiction, Gothic fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: SCIENCE FICTION (4 books)
+============================================================
+
+📖 BOOK 1: The Strange Case of Dr. Jekyll and Mr. Hyde
+   👤 Author: Stevenson, Robert Louis
+   🆔 ID: 43
+   📊 Downloads: 54881
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/43/pg43.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/43.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Horror tales, London (England) -- Fiction, Multiple personality -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: The War of the Worlds
+   👤 Author: Wells, H. G. (Herbert George)
+   🆔 ID: 36
+   📊 Downloads: 19356
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/36/pg36.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/36.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Imaginary wars and battles -- Fiction, Life on other planets -- Fiction, Mars (Planet) -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: Frankenstein; Or, The Modern Prometheus
+   👤 Author: Shelley, Mary Wollstonecraft
+   🆔 ID: 41445
+   📊 Downloads: 16160
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/41445/pg41445.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/41445.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Frankenstein's monster (Fictitious character) -- Fiction, Frankenstein, Victor (Fictitious character) -- Fiction, Gothic fiction
+   📚 Bookshelves: Category: British Literature, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 4: The Time Machine
+   👤 Author: Wells, H. G. (Herbert George)
+   🆔 ID: 35
+   📊 Downloads: 13525
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/35/pg35.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/35.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Dystopias -- Fiction, Science fiction, Time travel -- Fiction
+   📚 Bookshelves: Category: British Literature, Category: Novels
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: TRAGEDY (4 books)
+============================================================
+
+📖 BOOK 1: Plays of Sophocles: Oedipus the King; Oedipus at Colonus; Antigone
+   👤 Author: Sophocles
+   🆔 ID: 31
+   📊 Downloads: 7807
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/31/pg31.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/31.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Antigone (Mythological character) -- Drama, Greek drama (Tragedy) -- Translations into English, Oedipus (Greek mythological figure) -- Drama
+   📚 Bookshelves: Best Books Ever Listings, Category: Classics of Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: Œuvres de P. Corneille, Tome 02
+   👤 Author: Corneille, Pierre
+   🆔 ID: 34445
+   📊 Downloads: 3803
+   🌐 Language: fr
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/34445/pg34445.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/34445.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: French drama (Tragedy) -- 17th century
+   📚 Bookshelves: Category: French Literature, Category: Plays/Films/Dramas
+
+--------------------------------------------------
+
+📖 BOOK 3: Greek tragedy
+   👤 Author: Norwood, Gilbert
+   🆔 ID: 74167
+   📊 Downloads: 3319
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/74167/pg74167.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/74167.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Greek drama (Tragedy) -- History and criticism, Mythology, Greek, in literature
+   📚 Bookshelves: Category: Classics of Literature, Category: Mythology, Legends & Folklore
+
+--------------------------------------------------
+
+📖 BOOK 4: Poine: a study in ancient Greek blood-vengeance
+   👤 Author: Treston, Hubert Joseph
+   🆔 ID: 69344
+   📊 Downloads: 3044
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/69344/pg69344.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/69344.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Criminal law (Greek law), Greece -- Civilization, Greek drama (Tragedy) -- History and criticism
+   📚 Bookshelves: Category: Archaeology & Anthropology, Category: History - Ancient
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: TRAVEL (4 books)
+============================================================
+
+📖 BOOK 1: The Expedition of Humphry Clinker
+   👤 Author: Smollett, T. (Tobias)
+   🆔 ID: 2160
+   📊 Downloads: 41049
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2160/pg2160.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/2160.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Epistolary fiction, Great Britain -- Fiction, Travelers -- Fiction
+   📚 Bookshelves: Best Books Ever Listings, Category: British Literature
+
+--------------------------------------------------
+
+📖 BOOK 2: Society in America, Volume 1 (of 2)
+   👤 Author: Martineau, Harriet
+   🆔 ID: 52621
+   📊 Downloads: 29909
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/52621/pg52621.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/52621.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: United States -- Description and travel, United States -- Economic conditions -- To 1865, United States -- Politics and government -- 1815-1861
+   📚 Bookshelves: Category: History - American, Category: Politics
+
+--------------------------------------------------
+
+📖 BOOK 3: Gulliver's Travels into Several Remote Nations of the World
+   👤 Author: Swift, Jonathan
+   🆔 ID: 829
+   📊 Downloads: 21025
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/829/pg829.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/829.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Fantasy fiction, Gulliver, Lemuel (Fictitious character) -- Fiction, Satire
+   📚 Bookshelves: Banned Books from Anne Haight's list, Best Books Ever Listings
+
+--------------------------------------------------
+
+📖 BOOK 4: The Travels of Marco Polo — Volume 1
+   👤 Author: Polo, Marco
+   🆔 ID: 10636
+   📊 Downloads: 14471
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/10636/pg10636.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/10636.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Asia -- Description and travel -- Early works to 1800, Mongols -- History, Polo, Marco, 1254-1323?
+   📚 Bookshelves: Category: Adventure, Category: History - Medieval/Middle Ages
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: WESTERN (5 books)
+============================================================
+
+📖 BOOK 1: My Ántonia
+   👤 Author: Cather, Willa
+   🆔 ID: 242
+   📊 Downloads: 2513
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/242/pg242.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/242.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Czech Americans -- Fiction, Domestic fiction, Farm life -- Fiction
+   📚 Bookshelves: Category: American Literature, Category: Novels
+
+--------------------------------------------------
+
+📖 BOOK 2: The Luck of Roaring Camp and Other Tales: With Condensed Novels, Spanish and American Legends, and Earlier Papers
+   👤 Author: Harte, Bret
+   🆔 ID: 6373
+   📊 Downloads: 2260
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/6373/pg6373.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/6373.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Frontier and pioneer life -- West (U.S.) -- Fiction, Western stories
+   📚 Bookshelves: Category: American Literature, Category: Short Stories
+
+--------------------------------------------------
+
+📖 BOOK 3: The Virginian: A Horseman of the Plains
+   👤 Author: Wister, Owen
+   🆔 ID: 1298
+   📊 Downloads: 2254
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/1298/pg1298.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/1298.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Cattle stealing -- Fiction, Cowboys -- Fiction, Vigilantes -- Fiction
+   📚 Bookshelves: Bestsellers, American, 1895-1923, Category: Adventure
+
+--------------------------------------------------
+
+📖 BOOK 4: Wanted—?
+   👤 Author: Cunningham, Eugene
+   🆔 ID: 76804
+   📊 Downloads: 2136
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/76804/pg76804.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/76804.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Murder -- Investigation -- Fiction, Texas -- Fiction, Texas Rangers -- Fiction
+
+--------------------------------------------------
+
+📖 BOOK 5: Lost Face
+   👤 Author: London, Jack
+   🆔 ID: 2429
+   📊 Downloads: 2034
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2429/pg2429.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/files/2429/2429-0.txt
+   📄 Format: text/plain; charset=utf-8
+   🏷️  Subjects: Adventure stories, American, American fiction -- 20th century, Short stories
+   📚 Bookshelves: Category: American Literature, Category: Short Stories
+
+--------------------------------------------------
+
+
+============================================================
+🎯 GENRE: YOUNG ADULT (3 books)
+============================================================
+
+📖 BOOK 1: Little Women; Or, Meg, Jo, Beth, and Amy
+   👤 Author: Alcott, Louisa May
+   🆔 ID: 37106
+   📊 Downloads: 54136
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/37106/pg37106.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/37106.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Autobiographical fiction, Bildungsromans, Domestic fiction
+   📚 Bookshelves: Category: American Literature, Category: Children & Young Adult Reading
+
+--------------------------------------------------
+
+📖 BOOK 2: Grimms' Fairy Tales
+   👤 Author: Grimm, Jacob
+   🆔 ID: 2591
+   📊 Downloads: 31613
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/2591/pg2591.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/files/2591/2591-0.txt
+   📄 Format: text/plain; charset=utf-8
+   🏷️  Subjects: Fairy tales -- Germany
+   📚 Bookshelves: Category: Children & Young Adult Reading, Category: German Literature
+
+--------------------------------------------------
+
+📖 BOOK 3: Anne of Green Gables
+   👤 Author: Montgomery, L. M. (Lucy Maud)
+   🆔 ID: 45
+   📊 Downloads: 25946
+   🌐 Language: en
+   🖼️  Cover: https://www.gutenberg.org/cache/epub/45/pg45.cover.medium.jpg
+   📝 Text URL: https://www.gutenberg.org/ebooks/45.txt.utf-8
+   📄 Format: text/plain; charset=us-ascii
+   🏷️  Subjects: Bildungsromans, Canada -- History -- 1867-1914 -- Fiction, Country life -- Prince Edward Island -- Fiction
+   📚 Bookshelves: Canada, Category: Children & Young Adult Reading
+
+--------------------------------------------------
+
