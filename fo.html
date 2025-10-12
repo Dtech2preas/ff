@@ -5,305 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gutenberg Library Reader</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .controls {
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .search-filter {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        #searchInput, #genreFilter {
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 25px;
-            font-size: 16px;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        #searchInput:focus, #genreFilter:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 30px;
-        }
-
-        .book-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            cursor: pointer;
-        }
-
-        .book-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            border-color: #667eea;
-        }
-
-        .book-cover {
-            width: 120px;
-            height: 180px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 8px;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            text-align: center;
-            padding: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            background-size: cover;
-            background-position: center;
-        }
-
-        .book-cover.has-image {
-            background: #f8f9fa;
-            color: #333;
-        }
-
-        .book-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #2c3e50;
-            line-height: 1.3;
-        }
-
-        .book-author {
-            color: #7f8c8d;
-            margin-bottom: 10px;
-            font-style: italic;
-        }
-
-        .book-meta {
-            font-size: 0.8em;
-            color: #95a5a6;
-            margin-bottom: 10px;
-        }
-
-        .book-genre {
-            display: inline-block;
-            background: #ecf0f1;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            margin: 2px;
-            color: #2c3e50;
-        }
-
-        .read-btn {
-            width: 100%;
-            padding: 10px;
-            background: #2ecc71;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .read-btn:hover {
-            background: #27ae60;
-            transform: scale(1.05);
-        }
-
-        /* Reader Styles */
-        .reader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .reader-container {
-            background: white;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 1000px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .reader-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 20px 20px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .reader-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            flex: 1;
-        }
-
-        .reader-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .reader-controls button {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .reader-controls button:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .reader-content {
-            flex: 1;
-            padding: 40px;
-            overflow-y: auto;
-            line-height: 1.8;
-            font-size: 18px;
-            background: #fefefe;
-        }
-
-        .book-content {
-            max-width: 700px;
-            margin: 0 auto;
-            font-family: 'Georgia', serif;
-        }
-
-        .book-content h1, .book-content h2, .book-content h3 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .book-content h1 {
-            font-size: 2.2em;
-            border-bottom: 2px solid #ecf0f1;
-            padding-bottom: 15px;
-        }
-
-        .book-content h2 {
-            font-size: 1.8em;
-            margin-top: 40px;
-        }
-
-        .book-content p {
-            margin-bottom: 25px;
-            text-align: justify;
-            font-size: 1.1em;
-        }
-
-        .book-content .chapter {
-            margin-bottom: 50px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-            font-size: 1.2em;
-        }
-
-        .error {
-            text-align: center;
-            padding: 20px;
-            background: #e74c3c;
-            color: white;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .no-books {
-            text-align: center;
-            padding: 60px 20px;
-            color: #7f8c8d;
-            font-size: 1.2em;
-        }
-
-        .stats {
-            text-align: center;
-            padding: 15px;
-            background: #ecf0f1;
-            color: #2c3e50;
-            font-size: 0.9em;
-        }
+        /* ... (keep all your existing CSS styles) ... */
     </style>
 </head>
 <body>
@@ -349,7 +51,6 @@
     <script>
         let books = [];
         let currentFontSize = 18;
-        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 
         // Load books from data.txt
         async function loadBooks() {
@@ -504,12 +205,25 @@
             contentDiv.innerHTML = '<div class="loading">Loading book content...</div>';
             
             try {
-                // Use CORS proxy to fetch the book content
-                const response = await fetch(CORS_PROXY + textUrl);
+                // Try direct fetch first (works for same-origin or CORS-enabled servers)
+                let response;
+                try {
+                    response = await fetch(textUrl);
+                } catch (directError) {
+                    console.log('Direct fetch failed, trying CORS proxy...');
+                    // Fallback to CORS proxy
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(textUrl)}`;
+                    response = await fetch(proxyUrl);
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const text = await response.text();
                 
                 // Clean and format the content
-                const cleanedContent = cleanBookContent(text);
+                const cleanedContent = cleanBookContent(text, title);
                 contentDiv.innerHTML = `
                     <div class="book-content" style="font-size: ${currentFontSize}px;">
                         ${cleanedContent}
@@ -520,60 +234,178 @@
                 console.error('Error loading book:', error);
                 contentDiv.innerHTML = `
                     <div class="error">
-                        Failed to load book content. 
-                        <button onclick="window.open('${textUrl}', '_blank')">Open in New Tab Instead</button>
+                        Failed to load book content: ${error.message}<br><br>
+                        <button onclick="window.open('${textUrl}', '_blank')" style="
+                            padding: 10px 20px; 
+                            background: #3498db; 
+                            color: white; 
+                            border: none; 
+                            border-radius: 5px; 
+                            cursor: pointer;
+                        ">
+                            Open in New Tab Instead
+                        </button>
                     </div>
                 `;
             }
         }
 
-        function cleanBookContent(text) {
-            // Remove everything before the actual book content
-            const startMarker = '*** START OF THE PROJECT GUTENBERG EBOOK';
-            const startIndex = text.indexOf(startMarker);
+        function cleanBookContent(text, title) {
+            console.log('Raw text length:', text.length);
             
-            if (startIndex === -1) {
-                return '<p>Unable to parse book content. The format may be different.</p>';
+            // Multiple strategies to find the actual book content
+            let content = text;
+            
+            // Strategy 1: Look for "START OF THE PROJECT GUTENBERG"
+            const startMarkers = [
+                '*** START OF THE PROJECT GUTENBERG EBOOK',
+                '***START OF THE PROJECT GUTENBERG EBOOK',
+                '*** START OF THIS PROJECT GUTENBERG EBOOK',
+                'Produced by',
+                'Transcriber'
+            ];
+            
+            let startIndex = -1;
+            for (const marker of startMarkers) {
+                startIndex = text.indexOf(marker);
+                if (startIndex !== -1) {
+                    console.log('Found start marker:', marker);
+                    break;
+                }
             }
-
-            // Find the end of the header section (usually after the title and credits)
-            let contentStart = startIndex;
             
-            // Look for the first meaningful content after the start marker
-            const lines = text.substring(startIndex).split('\n');
-            let contentLines = [];
-            let foundContent = false;
+            if (startIndex !== -1) {
+                // Find the next line break after the start marker
+                const afterStart = text.substring(startIndex);
+                const firstLineBreak = afterStart.indexOf('\n');
+                if (firstLineBreak !== -1) {
+                    content = afterStart.substring(firstLineBreak + 1);
+                } else {
+                    content = afterStart;
+                }
+            }
+            
+            // Strategy 2: Remove common Gutenberg headers
+            const headerPatterns = [
+                /The Project Gutenberg eBook of .+?\n\n/gs,
+                /This ebook is for the use of anyone anywhere.+?www\.gutenberg\.org\./gs,
+                /Title: .+?\nAuthor: .+?\nRelease date: .+?\n/gs,
+                /Language: .+?\nCredits: .+?\n/gs,
+            ];
+            
+            headerPatterns.forEach(pattern => {
+                content = content.replace(pattern, '');
+            });
+            
+            // Strategy 3: Look for the actual story content
+            // Often starts with chapter headings or the actual narrative
+            const storyStartMarkers = [
+                'CHAPTER',
+                'Chapter',
+                'I\n', // Common start for many books
+                'THE\n', // All caps start
+                'It was',
+                'In the',
+                'Once upon'
+            ];
+            
+            for (const marker of storyStartMarkers) {
+                const markerIndex = content.indexOf(marker);
+                if (markerIndex !== -1 && markerIndex < 1000) { // Only if found near beginning
+                    content = content.substring(markerIndex);
+                    break;
+                }
+            }
+            
+            // Remove end markers
+            const endMarkers = [
+                '*** END OF THE PROJECT GUTENBERG EBOOK',
+                '*** END OF THIS PROJECT GUTENBERG EBOOK',
+                'End of the Project Gutenberg',
+                'End of Project Gutenberg'
+            ];
+            
+            for (const marker of endMarkers) {
+                const endIndex = content.indexOf(marker);
+                if (endIndex !== -1) {
+                    content = content.substring(0, endIndex);
+                    break;
+                }
+            }
+            
+            // Format the content into HTML
+            const lines = content.split('\n');
+            let htmlContent = [];
+            let inParagraph = false;
+            let currentParagraph = [];
+            
+            // Add book title
+            htmlContent.push(`<h1>${title}</h1>`);
+            htmlContent.push('<div style="text-align: center; margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 10px;">');
+            htmlContent.push('<em>From Project Gutenberg • Free eBook</em>');
+            htmlContent.push('</div>');
             
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 
-                // Skip empty lines at the beginning
-                if (!foundContent && !line) continue;
-                
-                // Start collecting content after we find the first non-header line
-                if (!foundContent && line && !line.includes('***') && line.length > 10) {
-                    foundContent = true;
+                if (!line) {
+                    // Empty line - end current paragraph
+                    if (currentParagraph.length > 0) {
+                        htmlContent.push(`<p>${currentParagraph.join(' ')}</p>`);
+                        currentParagraph = [];
+                    }
+                    inParagraph = false;
+                    continue;
                 }
                 
-                if (foundContent) {
-                    // Stop if we hit the end marker
-                    if (line.includes('*** END OF THE PROJECT GUTENBERG EBOOK')) {
-                        break;
+                // Check if this looks like a chapter heading
+                if ((line === line.toUpperCase() && line.length < 100 && !line.includes('.') && !line.includes(',')) ||
+                    line.startsWith('CHAPTER') || 
+                    line.startsWith('Chapter') ||
+                    (line.length > 10 && line.length < 200 && /^[IVXLCDM]+$/.test(line.replace(/[^IVXLCDM]/g, '')))) {
+                    
+                    // End previous paragraph
+                    if (currentParagraph.length > 0) {
+                        htmlContent.push(`<p>${currentParagraph.join(' ')}</p>`);
+                        currentParagraph = [];
                     }
                     
-                    // Format paragraphs
-                    if (line.length > 0) {
-                        if (line === line.toUpperCase() && line.length < 100 && !line.includes('.') && !line.includes(',')) {
-                            // Likely a chapter heading
-                            contentLines.push(`<h2 class="chapter">${line}</h2>`);
-                        } else {
-                            contentLines.push(`<p>${line}</p>`);
-                        }
-                    }
+                    // Add chapter heading
+                    htmlContent.push(`<h2 class="chapter">${line}</h2>`);
+                    inParagraph = false;
+                } else {
+                    // Regular text line
+                    currentParagraph.push(line);
+                    inParagraph = true;
                 }
             }
-
-            return contentLines.join('\n') || '<p>No readable content found in this book.</p>';
+            
+            // Add the last paragraph if exists
+            if (currentParagraph.length > 0) {
+                htmlContent.push(`<p>${currentParagraph.join(' ')}</p>`);
+            }
+            
+            // If we didn't find much content, show a message
+            if (htmlContent.length <= 3) {
+                return `
+                    <div class="error">
+                        <p>Could not extract readable content from this book.</p>
+                        <p>The book file might be in a different format.</p>
+                        <button onclick="window.open('${window.currentBookUrl}', '_blank')" style="
+                            padding: 10px 20px; 
+                            background: #3498db; 
+                            color: white; 
+                            border: none; 
+                            border-radius: 5px; 
+                            cursor: pointer;
+                        ">
+                            View Original File
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return htmlContent.join('\n');
         }
 
         function closeReader() {
@@ -596,6 +428,9 @@
                 closeReader();
             }
         });
+
+        // Store current book URL for fallback
+        window.currentBookUrl = '';
 
         // Load books when page loads
         window.addEventListener('load', loadBooks);
