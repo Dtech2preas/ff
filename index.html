@@ -441,6 +441,11 @@
             document.getElementById('hud').style.display = 'block';
             document.getElementById('controls-overlay').style.display = 'block';
 
+            // Tell the other player to start
+            if (state.role === 'host' && conn && conn.open) {
+                conn.send({ type: 'START' });
+            }
+
             // Create initial pool of obstacles for both Host and Client
             // The Host controls them, the Client updates them based on sync
             for(let i=0; i<10; i++) {
