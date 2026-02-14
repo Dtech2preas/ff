@@ -93,8 +93,13 @@
 
         <div id="host-controls" class="hidden">
             <p style="color: #fff; margin-bottom: 10px;">Select Game Mode:</p>
-            <button class="game-btn" onclick="startGame('tunnel')">MODE 1: TUNNEL RUN<br><span style="font-size: 0.7rem; opacity: 0.8;">(Steer + Speed)</span></button>
-            <button class="game-btn" onclick="startGame('grid')">MODE 2: GRID DODGE<br><span style="font-size: 0.7rem; opacity: 0.8;">(Axis Split)</span></button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="game-btn" onclick="startGame('tunnel')">TUNNEL RUN<br><span style="font-size: 0.7rem; opacity: 0.8;">(Co-op)</span></button>
+                <button class="game-btn" onclick="startGame('grid')">GRID DODGE<br><span style="font-size: 0.7rem; opacity: 0.8;">(Co-op)</span></button>
+                <button class="game-btn" onclick="startGame('defense')">CORE DEFENSE<br><span style="font-size: 0.7rem; opacity: 0.8;">(Co-op)</span></button>
+                <button class="game-btn" onclick="startGame('shooter')">SPACE DUEL<br><span style="font-size: 0.7rem; opacity: 0.8;">(PvP)</span></button>
+                <button class="game-btn" onclick="startGame('tictactoe')" style="grid-column: span 2;">TIC-TAC-TOE<br><span style="font-size: 0.7rem; opacity: 0.8;">(PvP Strategy)</span></button>
+            </div>
         </div>
 
         <p id="client-msg" class="hidden">Waiting for Host to start game...</p>

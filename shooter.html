@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORBIT: Space Duel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; touch-action: none; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: 'Orbitron', sans-serif; }
+
+        #game-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        .hud-top {
+            position: absolute; top: 20px; width: 100%; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+
+        .health-bar-container {
+            width: 40%; max-width: 300px;
+            background: rgba(0,0,0,0.5); border: 1px solid #333;
+            padding: 5px; border-radius: 5px;
+        }
+        .health-label { font-size: 0.8rem; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .health-fill {
+            height: 10px; background: #0f0; width: 100%;
+            transition: width 0.2s, background-color 0.2s;
+        }
+        .health-fill.low { background: #f00; }
+        .health-fill.med { background: #ff0; }
+
+        .controls-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            display: flex; pointer-events: auto; padding: 10px; gap: 10px;
+        }
+
+        .btn-move {
+            flex: 1; background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #0ff;
+        }
+        .btn-move:active { background: rgba(0, 255, 255, 0.3); color: #fff; }
+
+        .btn-shoot {
+            width: 30%; background: rgba(255, 0, 85, 0.2);
+            border: 1px solid #ff0055; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: #ff0055; font-weight: bold;
+        }
+        .btn-shoot:active { background: rgba(255, 0, 85, 0.5); color: #fff; }
+
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 20; pointer-events: auto;
+        }
+        .hidden { display: none !important; }
+        h1 { color: #ff0055; margin-bottom: 10px; font-size: 3rem; }
+
+        button.retry-btn {
+            margin-top: 20px; padding: 15px 40px; font-size: 1.2rem;
+            background: #ff0055; border: none; color: #fff; font-family: 'Orbitron';
+            cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+        }
+
+        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <div id="game-ui">
+        <div class="hud-top">
+            <div class="health-bar-container">
+                <div class="health-label"><span>YOU</span> <span id="hp-val-me">100%</span></div>
+                <div class="health-fill" id="hp-bar-me"></div>
+            </div>
+            <div class="health-bar-container" style="text-align: right;">
+                <div class="health-label"><span id="hp-val-opp">100%</span> <span>ENEMY</span></div>
+                <div class="health-fill" id="hp-bar-opp" style="float: right;"></div>
+            </div>
+        </div>
+
+        <div class="controls-layer hidden" id="controls">
+            <div class="btn-move" id="btn-left">◀</div>
+            <div class="btn-shoot" id="btn-shoot">FIRE</div>
+            <div class="btn-move" id="btn-right">▶</div>
+        </div>
+
+        <div id="loading-screen" class="screen">
+            <div id="waiting-msg">CONNECTING...</div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <h1 id="end-title">GAME OVER</h1>
+            <p id="end-msg">You Won!</p>
+            <button class="retry-btn" id="btn-retry">REMATCH</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ROOM_ID = urlParams.get('room');
+        const MY_ROLE = urlParams.get('role');
+
+        if (!ROOM_ID || !MY_ROLE) {
+            window.location.href = 'index.html';
+        }
+
+        // State
+        const state = {
+            playing: false,
+            // Ships
+            me: { x: 0, targetX: 0, hp: 100, role: MY_ROLE },
+            opp: { x: 0, targetX: 0, hp: 100, role: MY_ROLE === 'host' ? 'client' : 'host' },
+            // Projectiles
+            projectiles: [], // { id, x, z, owner, mesh }
+            lastShotTime: 0
+        };
+
+        // Network
+        let peer, conn;
+        const PEER_ID = `${ROOM_ID}-shooter`;
+
+        function initNetwork() {
+            if (MY_ROLE === 'host') {
+                peer = new Peer(PEER_ID);
+                peer.on('open', (id) => {
+                    console.log("Host Ready:", id);
+                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
+                });
+                peer.on('connection', (c) => handleConnection(c));
+                peer.on('error', (err) => {
+                    if (err.type === 'unavailable-id') {
+                        alert("Session invalid. Please create new room.");
+                        window.location.href = 'index.html';
+                    }
+                });
+            } else {
+                peer = new Peer();
+                peer.on('open', () => {
+                    conn = peer.connect(PEER_ID);
+                    handleConnection(conn);
+                });
+                peer.on('error', (err) => {
+                     console.error(err);
+                     alert("Connection Failed: " + err.type);
+                });
+            }
+        }
+
+        function handleConnection(connection) {
+            conn = connection;
+            conn.on('open', () => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('controls').classList.remove('hidden');
+                resetGame();
+                startGame();
+            });
+            conn.on('data', (data) => {
+                if (data.type === 'MOVE') {
+                    state.opp.targetX = data.x;
+                } else if (data.type === 'SHOOT') {
+                    spawnProjectile(data.x, state.opp.role);
+                } else if (data.type === 'HIT') {
+                    // I hit them (they confirmed it)
+                    state.opp.hp = data.hp;
+                    updateHealthUI();
+                    if (state.opp.hp <= 0) endGame(true);
+                } else if (data.type === 'RESTART') {
+                    resetGame();
+                    startGame();
+                }
+            });
+            conn.on('close', () => {
+                alert("Partner Disconnected");
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        // Camera position depends on role?
+        // Let's keep camera static and just swap ship positions visually?
+        // Actually, easier if Camera is always behind "Me".
+        // Host is at Z=10 looking at Z=-10?
+        // Client is at Z=-10 looking at Z=10?
+        // Let's standardise: Camera at (0, 5, 15) looking at (0, 0, -5).
+        // My Ship is always at Z=10 (bottom of screen).
+        // Opponent Ship is always at Z=-10 (top of screen).
+        // When sending coordinates, if I am Host, my Z is +10. If I am Client, my Z is -10.
+        // Wait, if I always see myself at bottom, I need to invert Z for rendering if I am Client.
+
+        camera.position.set(0, 15, 15);
+        camera.lookAt(0, 0, -5);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('game-container').appendChild(renderer.domElement);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(0, 10, 0);
+        scene.add(pointLight);
+
+        // Arena
+        const gridHelper = new THREE.GridHelper(40, 40, 0x00ffff, 0x111122);
+        scene.add(gridHelper);
+
+        // Ships
+        const shipGeo = new THREE.ConeGeometry(1, 2, 8);
+        shipGeo.rotateX(Math.PI / 2); // Point forward
+
+        const myMat = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+        const oppMat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+
+        const myShip = new THREE.Mesh(shipGeo, myMat);
+        scene.add(myShip);
+
+        const oppShip = new THREE.Mesh(shipGeo, oppMat);
+        // Opponent faces me
+        oppShip.rotation.y = Math.PI;
+        scene.add(oppShip);
+
+        // Projectiles Group
+        const projectileGroup = new THREE.Group();
+        scene.add(projectileGroup);
+
+        // Input Handling
+        function triggerMove(dir) {
+            const step = 2.0;
+            state.me.targetX += dir * step;
+            state.me.targetX = Math.max(-15, Math.min(15, state.me.targetX));
+
+            if (conn && conn.open) {
+                conn.send({ type: 'MOVE', x: state.me.targetX });
+            }
+        }
+
+        function triggerShoot() {
+            const now = Date.now();
+            if (now - state.lastShotTime < 500) return; // Cooldown
+            state.lastShotTime = now;
+
+            spawnProjectile(state.me.x, state.me.role);
+            if (conn && conn.open) {
+                conn.send({ type: 'SHOOT', x: state.me.x });
+            }
+        }
+
+        document.getElementById('btn-left').addEventListener('pointerdown', () => triggerMove(-1));
+        document.getElementById('btn-right').addEventListener('pointerdown', () => triggerMove(1));
+        document.getElementById('btn-shoot').addEventListener('pointerdown', () => triggerShoot());
+
+        document.getElementById('btn-retry').addEventListener('click', () => {
+            if (conn && conn.open) {
+                conn.send({ type: 'RESTART' });
+                resetGame();
+                startGame();
+            }
+        });
+
+        // Game Logic
+        function resetGame() {
+            state.playing = false;
+            state.me.hp = 100;
+            state.opp.hp = 100;
+            state.me.x = 0;
+            state.me.targetX = 0;
+            state.opp.x = 0;
+            state.opp.targetX = 0;
+            state.projectiles = [];
+
+            projectileGroup.clear();
+            document.getElementById('game-over-screen').classList.add('hidden');
+            updateHealthUI();
+        }
+
+        function startGame() {
+            state.playing = true;
+            if (window.gameInterval) clearInterval(window.gameInterval);
+            window.gameInterval = setInterval(gameLoop, 16);
+        }
+
+        function endGame(iWon) {
+            state.playing = false;
+            clearInterval(window.gameInterval);
+            document.getElementById('game-over-screen').classList.remove('hidden');
+
+            if (iWon) {
+                document.getElementById('end-title').innerText = "VICTORY";
+                document.getElementById('end-title').style.color = "#0f0";
+                document.getElementById('end-msg').innerText = "Enemy Destroyed!";
+            } else {
+                document.getElementById('end-title').innerText = "DEFEAT";
+                document.getElementById('end-title').style.color = "#f00";
+                document.getElementById('end-msg').innerText = "You were destroyed!";
+            }
+        }
+
+        function spawnProjectile(x, ownerRole) {
+            const isMine = ownerRole === state.me.role;
+            const z = isMine ? 8 : -8; // Spawn slightly ahead of ship
+
+            const geo = new THREE.SphereGeometry(0.3);
+            const mat = new THREE.MeshBasicMaterial({ color: isMine ? 0xffff00 : 0xff00ff });
+            const mesh = new THREE.Mesh(geo, mat);
+
+            mesh.position.set(x, 0, z);
+            projectileGroup.add(mesh);
+
+            state.projectiles.push({
+                mesh: mesh,
+                owner: ownerRole,
+                x: x,
+                z: z
+            });
+        }
+
+        function updateHealthUI() {
+            document.getElementById('hp-val-me').innerText = state.me.hp + "%";
+            document.getElementById('hp-bar-me').style.width = state.me.hp + "%";
+
+            document.getElementById('hp-val-opp').innerText = state.opp.hp + "%";
+            document.getElementById('hp-bar-opp').style.width = state.opp.hp + "%";
+
+            // Colors
+            if(state.me.hp < 30) document.getElementById('hp-bar-me').className = "health-fill low";
+            else if(state.me.hp < 60) document.getElementById('hp-bar-me').className = "health-fill med";
+            else document.getElementById('hp-bar-me').className = "health-fill";
+        }
+
+        function gameLoop() {
+            if (!state.playing) return;
+
+            // Interpolate Ships
+            state.me.x += (state.me.targetX - state.me.x) * 0.2;
+            state.opp.x += (state.opp.targetX - state.opp.x) * 0.2;
+
+            // Move Projectiles
+            const speed = 0.5;
+            for (let i = state.projectiles.length - 1; i >= 0; i--) {
+                const p = state.projectiles[i];
+                const isMine = p.owner === state.me.role;
+
+                // Move logic: Mine moves -Z (away), Opp moves +Z (towards me)
+                // Wait, coordinate system:
+                // Me: Z=10. Enemy: Z=-10.
+                // My bullets go from 10 -> -10 (-Z).
+                // Enemy bullets go from -10 -> 10 (+Z).
+
+                if (isMine) p.z -= speed;
+                else p.z += speed;
+
+                p.mesh.position.z = p.z;
+
+                // Collision with Me
+                if (!isMine) {
+                    // Check if bullet hit me (Z approx 10, X approx me.x)
+                    if (Math.abs(p.z - 10) < 1.0 && Math.abs(p.x - state.me.x) < 1.5) {
+                        // HIT!
+                        state.me.hp -= 10;
+                        updateHealthUI();
+
+                        // Notify peer
+                        conn.send({ type: 'HIT', hp: state.me.hp });
+
+                        // Remove bullet
+                        projectileGroup.remove(p.mesh);
+                        state.projectiles.splice(i, 1);
+
+                        if (state.me.hp <= 0) endGame(false);
+                        continue;
+                    }
+                }
+
+                // Remove out of bounds
+                if (p.z < -20 || p.z > 20) {
+                    projectileGroup.remove(p.mesh);
+                    state.projectiles.splice(i, 1);
+                }
+            }
+        }
+
+        function render() {
+            requestAnimationFrame(render);
+
+            // Render logic
+            myShip.position.set(state.me.x, 0, 10);
+            oppShip.position.set(state.opp.x, 0, -10);
+
+            renderer.render(scene, camera);
+        }
+        render();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        initNetwork();
+
+    </script>
+</body>
+</html>
