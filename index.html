@@ -133,11 +133,25 @@
             <p id="lobby-status">Waiting for connection...</p>
         </div>
 
+        <!-- Screen 3.5: Tutorial -->
+        <div id="tutorial-screen" class="screen hidden">
+            <h1>HOW TO PLAY</h1>
+            <div style="text-align: left; margin: 20px 0;">
+                <p>1. <strong>DRAG</strong> anywhere on screen to move.</p>
+                <p>2. <strong>DODGE</strong> the red energy blocks.</p>
+                <p>3. <strong>STAY CLOSE</strong> to your partner for Sync Bonus.</p>
+            </div>
+            <button id="btn-ready">READY</button>
+            <p id="tutorial-status" style="font-size: 0.8rem; margin-top: 10px; opacity: 0; transition: opacity 0.3s;">Waiting for partner...</p>
+        </div>
+
         <!-- Screen 4: Game Over -->
         <div id="game-over-screen" class="screen hidden">
             <h1 style="color: #ff0055;">CRASHED</h1>
             <p>Distance Traveled: <span id="final-score" style="color: #fff; font-weight: bold;">0</span> km</p>
             <button id="btn-restart">Retry</button>
+            <button id="btn-disconnect" class="secondary" style="margin-top: 10px; border-color: #ff0055; color: #ff0055;">Disconnect</button>
+            <p id="retry-status" style="font-size: 0.8rem; margin-top: 10px; opacity: 0; transition: opacity 0.3s;">Waiting for partner...</p>
         </div>
     </div>
 
@@ -188,7 +202,9 @@
             myPos: { x: 0, y: 0 },
             partnerPos: { x: 0, y: 0 },
             obstacles: [],
-            proximityBonus: 0
+            proximityBonus: 0,
+            isReady: false,
+            partnerReady: false
         };
 
         // --- PEERJS SETUP ---
@@ -234,12 +250,13 @@
                 handleData(data);
             });
 
-            conn.on('open', () => {
-                // Connection established
-                if (state.role === 'host') {
-                    setTimeout(startGame, 1000);
-                }
-            });
+            if (conn.open) {
+                 showScreen('tutorial');
+            } else {
+                 conn.on('open', () => {
+                     showScreen('tutorial');
+                 });
+            }
 
             conn.on('close', () => {
                 state.connected = false;
@@ -253,6 +270,9 @@
                 // Update partner position visualization
                 state.partnerPos.x = data.x;
                 state.partnerPos.y = data.y;
+            } else if (data.type === 'READY') {
+                state.partnerReady = true;
+                checkStartCondition();
             } else if (data.type === 'START') {
                 startGame();
             } else if (data.type === 'GAME_OVER') {
@@ -283,6 +303,7 @@
             start: document.getElementById('start-screen'),
             join: document.getElementById('join-screen'),
             lobby: document.getElementById('lobby-screen'),
+            tutorial: document.getElementById('tutorial-screen'),
             gameover: document.getElementById('game-over-screen')
         };
 
@@ -358,7 +379,30 @@
             });
         });
 
-        document.getElementById('btn-restart').addEventListener('click', () => {
+        function handleReady() {
+             state.isReady = true;
+
+             // Update UI for waiting
+             document.getElementById('btn-ready').innerText = "WAITING...";
+             document.getElementById('btn-restart').innerText = "WAITING...";
+
+             const msg = "Waiting for partner...";
+             document.getElementById('tutorial-status').innerText = msg;
+             document.getElementById('tutorial-status').style.opacity = '1';
+             document.getElementById('retry-status').innerText = msg;
+             document.getElementById('retry-status').style.opacity = '1';
+
+             if (conn && conn.open) {
+                 conn.send({ type: 'READY' });
+             }
+             checkStartCondition();
+        }
+
+        document.getElementById('btn-ready').addEventListener('click', handleReady);
+        document.getElementById('btn-restart').addEventListener('click', handleReady);
+
+        document.getElementById('btn-disconnect').addEventListener('click', () => {
+            if(conn) conn.close();
             location.reload();
         });
 
@@ -392,7 +436,7 @@
             wireframe: true,
             side: THREE.BackSide,
             transparent: true,
-            opacity: 0.3
+            opacity: 0.1
         });
         const tunnel = new THREE.Mesh(tunnelGeo, tunnelMat);
         tunnel.rotation.x = -Math.PI / 2;
@@ -425,10 +469,49 @@
         const obstacleGroup = new THREE.Group();
         scene.add(obstacleGroup);
 
+        function resetGame() {
+            state.playing = false;
+            state.score = 0;
+            state.speed = 0.5;
+            state.proximityBonus = 0;
+            state.obstacles = [];
+            state.isReady = false;
+            state.partnerReady = false;
+
+            // Reset Positions
+            state.myPos = { x: 0, y: 0 };
+            state.partnerPos = { x: 0, y: 0 };
+
+            // Clear Three.js objects
+            while(obstacleGroup.children.length > 0){
+                const obj = obstacleGroup.children[0];
+                obstacleGroup.remove(obj);
+            }
+
+            // Update UI
+            document.getElementById('score').innerText = "0";
+            document.getElementById('sync-meter').innerText = "0";
+            document.getElementById('final-score').innerText = "0";
+
+            // Hide HUD during reset (optional, but cleaner)
+            document.getElementById('hud').style.display = 'none';
+        }
+
         function createObstacle(z) {
             const geo = new THREE.BoxGeometry(2, 2, 2);
-            const mat = new THREE.MeshBasicMaterial({ color: 0xff0055, wireframe: true });
+            // Solid core with transparency
+            const mat = new THREE.MeshBasicMaterial({
+                color: 0xff0055,
+                transparent: true,
+                opacity: 0.6
+            });
             const mesh = new THREE.Mesh(geo, mat);
+
+            // Bright wireframe edges
+            const edges = new THREE.EdgesGeometry(geo);
+            const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0xffffff }));
+            mesh.add(line);
+
             mesh.position.z = z;
             mesh.position.x = (Math.random() - 0.5) * 10; // Random X
             mesh.position.y = (Math.random() - 0.5) * 6;  // Random Y
@@ -436,7 +519,29 @@
         }
 
         // --- GAME LOOP ---
+        function checkStartCondition() {
+            const statusMsg = "Partner Ready! Waiting for you...";
+
+            if (state.isReady && state.partnerReady) {
+                 // Both players are ready.
+                 // If I am Host, I initiate the start.
+                 if (state.role === 'host') {
+                     if (conn && conn.open) conn.send({ type: 'START' });
+                     startGame();
+                 }
+                 // If Client, do nothing. Host will send START signal which triggers startGame() via handleData.
+            } else if (state.partnerReady && !state.isReady) {
+                // Partner is waiting for me
+                document.getElementById('tutorial-status').innerText = statusMsg;
+                document.getElementById('tutorial-status').style.opacity = '1';
+
+                document.getElementById('retry-status').innerText = statusMsg;
+                document.getElementById('retry-status').style.opacity = '1';
+            }
+        }
+
         function startGame() {
+            resetGame(); // Ensure clean state
             state.playing = true;
             showScreen(null); // Hide UI
             document.getElementById('hud').style.display = 'block';
@@ -472,6 +577,11 @@
             state.playing = false;
             document.getElementById('hud').style.display = 'none';
             document.getElementById('final-score').innerText = Math.floor(finalScore || state.score);
+
+            // Reset Retry Button
+            document.getElementById('btn-restart').innerText = "Retry";
+            document.getElementById('retry-status').style.opacity = '0';
+
             showScreen('gameover');
         }
 
