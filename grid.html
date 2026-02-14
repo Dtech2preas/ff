@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORBIT: Grid Dodge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; touch-action: none; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: 'Orbitron', sans-serif; }
+
+        #game-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        .hud-top {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            display: flex; justify-content: space-between; padding: 0 20px;
+        }
+        .score { font-size: 2rem; color: #0ff; text-shadow: 0 0 10px #0ff; }
+        .role-display { font-size: 1rem; color: #fff; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; border: 1px solid #333; }
+
+        .controls-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            display: flex; pointer-events: auto; justify-content: space-between; padding: 10px;
+        }
+
+        .btn-zone {
+            width: 30%; height: 100%; background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #0ff;
+        }
+        .btn-zone:active { background: rgba(0, 255, 255, 0.3); color: #fff; }
+
+        /* Specific layouts for roles */
+        #controls-h { flex-direction: row; width: 100%; justify-content: space-between; }
+        #controls-v { flex-direction: column; width: 100%; align-items: center; justify-content: space-between; }
+
+        #controls-v .btn-zone { width: 100%; height: 45%; } /* Up/Down stacked */
+
+        #btn-swap {
+            position: absolute; top: 80px; right: 20px; pointer-events: auto;
+            background: #333; color: #fff; border: 1px solid #555;
+            padding: 8px 12px; font-family: 'Orbitron'; cursor: pointer;
+            z-index: 100; font-size: 0.8rem;
+        }
+
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 20; pointer-events: auto;
+        }
+        .hidden { display: none !important; }
+        h1 { color: #ff0055; margin-bottom: 10px; font-size: 3rem; }
+        button.retry-btn {
+            margin-top: 20px; padding: 15px 40px; font-size: 1.2rem;
+            background: #ff0055; border: none; color: #fff; font-family: 'Orbitron';
+            cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+        }
+
+        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <div id="game-ui">
+        <div class="hud-top">
+            <div class="role-display" id="my-role-text">ROLE: ???</div>
+            <div class="score">SCORE: <span id="score-val">0</span></div>
+        </div>
+
+        <button id="btn-swap">SWAP AXIS</button>
+
+        <!-- Horizontal Controls -->
+        <div id="controls-h" class="controls-layer hidden">
+            <div class="btn-zone" id="btn-left">◀</div>
+            <div class="btn-zone" id="btn-right">▶</div>
+        </div>
+
+        <!-- Vertical Controls -->
+        <div id="controls-v" class="controls-layer hidden">
+            <div class="btn-zone" id="btn-up">▲</div>
+            <div class="btn-zone" id="btn-down">▼</div>
+        </div>
+
+        <div id="loading-screen" class="screen">
+            <div id="waiting-msg">CONNECTING...</div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <h1>GAME OVER</h1>
+            <p>Score: <span id="final-score">0</span></p>
+            <button class="retry-btn" id="btn-retry">RETRY</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ROOM_ID = urlParams.get('room');
+        const MY_ROLE = urlParams.get('role');
+
+        if (!ROOM_ID || !MY_ROLE) {
+            window.location.href = 'index.html';
+        }
+
+        // State
+        const state = {
+            playing: false,
+            score: 0,
+            x: 0,
+            z: 0,
+
+            // Roles
+            roleH: 'host', // Who controls X?
+            roleV: 'client', // Who controls Z?
+
+            // Inputs
+            inputX: 0,
+            inputZ: 0,
+
+            enemies: []
+        };
+
+        // Network
+        let peer, conn;
+        const PEER_ID = `${ROOM_ID}-grid`;
+
+        function initNetwork() {
+            if (MY_ROLE === 'host') {
+                peer = new Peer(PEER_ID);
+                peer.on('open', (id) => {
+                    console.log("Host Ready:", id);
+                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
+                });
+                peer.on('connection', (c) => handleConnection(c));
+                peer.on('error', (err) => {
+                    if (err.type === 'unavailable-id') {
+                        alert("Session invalid. Please create new room.");
+                        window.location.href = 'index.html';
+                    }
+                });
+            } else {
+                peer = new Peer();
+                peer.on('open', () => {
+                    conn = peer.connect(PEER_ID);
+                    handleConnection(conn);
+                });
+                peer.on('error', (err) => {
+                     console.error(err);
+                     alert("Connection Failed: " + err.type);
+                });
+            }
+        }
+
+        function handleConnection(connection) {
+            conn = connection;
+            conn.on('open', () => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                updateRoleUI();
+                if (MY_ROLE === 'host') startGame();
+            });
+            conn.on('data', (data) => {
+                if (data.type === 'STATE' && MY_ROLE === 'client') {
+                    state.x = data.x;
+                    state.z = data.z;
+                    state.score = data.score;
+                    state.enemies = data.enemies;
+                    state.roleH = data.roleH;
+                    state.roleV = data.roleV;
+                    state.playing = data.playing;
+                    updateRoleUI();
+                    if (!state.playing) endGame(state.score);
+                } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
+                    if (state.roleH === 'client') state.inputX = data.x;
+                    if (state.roleV === 'client') state.inputZ = data.z;
+                } else if (data.type === 'SWAP' && MY_ROLE === 'host') {
+                     const temp = state.roleH;
+                     state.roleH = state.roleV;
+                     state.roleV = temp;
+                     updateRoleUI();
+                } else if (data.type === 'GAME_OVER') {
+                    endGame(data.score);
+                } else if (data.type === 'RESTART') {
+                    resetGame();
+                }
+            });
+            conn.on('close', () => {
+                alert("Partner Disconnected");
+                window.location.href = 'index.html';
+            });
+        }
+
+        function updateRoleUI() {
+            const amIH = (MY_ROLE === state.roleH);
+            document.getElementById('my-role-text').innerText = amIH ? "ROLE: HORIZONTAL (X)" : "ROLE: VERTICAL (Z)";
+            if (amIH) {
+                document.getElementById('controls-h').classList.remove('hidden');
+                document.getElementById('controls-v').classList.add('hidden');
+            } else {
+                document.getElementById('controls-h').classList.add('hidden');
+                document.getElementById('controls-v').classList.remove('hidden');
+            }
+        }
+
+        // Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x101010);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 15, 0); // High up
+        camera.lookAt(0, 0, 0); // Look down
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('game-container').appendChild(renderer.domElement);
+
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(0, 10, 0);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        // Arena
+        const gridHelper = new THREE.GridHelper(20, 20, 0x00ffff, 0x333333);
+        scene.add(gridHelper);
+
+        const arenaGeo = new THREE.PlaneGeometry(20, 20);
+        const arenaMat = new THREE.MeshBasicMaterial({ color: 0x111122, side: THREE.DoubleSide });
+        const arena = new THREE.Mesh(arenaGeo, arenaMat);
+        arena.rotation.x = -Math.PI / 2;
+        arena.position.y = -0.1;
+        scene.add(arena);
+
+        // Player
+        const playerGeo = new THREE.BoxGeometry(1, 1, 1);
+        const playerMat = new THREE.MeshNormalMaterial();
+        const player = new THREE.Mesh(playerGeo, playerMat);
+        scene.add(player);
+
+        // Enemies
+        const enemyGroup = new THREE.Group();
+        scene.add(enemyGroup);
+        const meshMap = new Map();
+
+        function createEnemy(x, z, id) {
+             const geo = new THREE.SphereGeometry(0.5, 16, 16);
+             const mat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+             const mesh = new THREE.Mesh(geo, mat);
+             mesh.position.set(x, 0.5, z);
+             mesh.userData = { id: id };
+             return mesh;
+        }
+
+        // Input
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
+        const btnUp = document.getElementById('btn-up');
+        const btnDown = document.getElementById('btn-down');
+
+        function handleX(val) {
+            if (MY_ROLE === state.roleH) {
+                state.inputX = val;
+                if (MY_ROLE === 'client') sendInput();
+            }
+        }
+        function handleZ(val) {
+            if (MY_ROLE === state.roleV) {
+                state.inputZ = val;
+                if (MY_ROLE === 'client') sendInput();
+            }
+        }
+
+        btnLeft.addEventListener('pointerdown', () => handleX(-1));
+        btnLeft.addEventListener('pointerup', () => handleX(0));
+        btnRight.addEventListener('pointerdown', () => handleX(1));
+        btnRight.addEventListener('pointerup', () => handleX(0));
+
+        btnUp.addEventListener('pointerdown', () => handleZ(-1)); // -Z is forward in Three.js
+        btnUp.addEventListener('pointerup', () => handleZ(0));
+        btnDown.addEventListener('pointerdown', () => handleZ(1));
+        btnDown.addEventListener('pointerup', () => handleZ(0));
+
+        // Prevent sticking
+        [btnLeft, btnRight, btnUp, btnDown].forEach(btn => {
+            btn.addEventListener('pointerleave', () => {
+                if(btn === btnLeft || btn === btnRight) handleX(0);
+                else handleZ(0);
+            });
+        });
+
+        document.getElementById('btn-swap').addEventListener('click', () => {
+            if (conn && conn.open) conn.send({ type: 'SWAP' });
+            if (MY_ROLE === 'host') {
+                const temp = state.roleH;
+                state.roleH = state.roleV;
+                state.roleV = temp;
+                updateRoleUI();
+            }
+        });
+
+        document.getElementById('btn-retry').addEventListener('click', () => {
+            if (MY_ROLE === 'host') {
+                conn.send({ type: 'RESTART' });
+                startGame();
+            }
+        });
+
+        function sendInput() {
+            if (conn && conn.open) {
+                conn.send({ type: 'INPUT', x: state.inputX, z: state.inputZ });
+            }
+        }
+
+        function startGame() {
+            resetGame();
+            if (window.gameInterval) clearInterval(window.gameInterval);
+            window.gameInterval = setInterval(gameLoop, 16);
+        }
+
+        function resetGame() {
+            state.playing = true;
+            state.score = 0;
+            state.x = 0;
+            state.z = 0;
+            state.enemies = [];
+            state.inputX = 0;
+            state.inputZ = 0;
+
+            document.getElementById('game-over-screen').classList.add('hidden');
+            document.getElementById('score-val').innerText = "0";
+
+            enemyGroup.clear();
+            meshMap.clear();
+        }
+
+        function endGame(finalScore) {
+            state.playing = false;
+            clearInterval(window.gameInterval);
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = Math.floor(finalScore);
+        }
+
+        // HOST LOGIC LOOP
+        function gameLoop() {
+            if (!state.playing) return;
+
+            // Move Player (Instant)
+            const speed = 0.2;
+            state.x += state.inputX * speed;
+            state.z += state.inputZ * speed;
+
+            // Clamp to Arena (-10 to 10)
+            state.x = Math.max(-9.5, Math.min(9.5, state.x));
+            state.z = Math.max(-9.5, Math.min(9.5, state.z));
+
+            state.score += 0.1;
+
+            // Spawn Enemies
+            if (Math.random() < 0.02 && state.enemies.length < 10) {
+                const id = Math.random().toString(36);
+                // Spawn at edge
+                const side = Math.floor(Math.random() * 4);
+                let ex=0, ez=0, vx=0, vz=0;
+                if (side === 0) { ex = -10; ez = (Math.random()-0.5)*20; vx = 0.1 + Math.random()*0.1; vz = (Math.random()-0.5)*0.1; }
+                else if (side === 1) { ex = 10; ez = (Math.random()-0.5)*20; vx = -0.1 - Math.random()*0.1; vz = (Math.random()-0.5)*0.1; }
+                else if (side === 2) { ez = -10; ex = (Math.random()-0.5)*20; vz = 0.1 + Math.random()*0.1; vx = (Math.random()-0.5)*0.1; }
+                else { ez = 10; ex = (Math.random()-0.5)*20; vz = -0.1 - Math.random()*0.1; vx = (Math.random()-0.5)*0.1; }
+
+                state.enemies.push({ id, x: ex, z: ez, vx, vz });
+            }
+
+            // Move Enemies
+            for (let i = state.enemies.length - 1; i >= 0; i--) {
+                const e = state.enemies[i];
+                e.x += e.vx;
+                e.z += e.vz;
+
+                // Bounce off walls
+                if (e.x < -10 || e.x > 10) e.vx *= -1;
+                if (e.z < -10 || e.z > 10) e.vz *= -1;
+
+                // Collision
+                const dx = e.x - state.x;
+                const dz = e.z - state.z;
+                if (Math.sqrt(dx*dx + dz*dz) < 1.0) {
+                    conn.send({ type: 'GAME_OVER', score: state.score });
+                    endGame(state.score);
+                    return;
+                }
+            }
+
+            // Sync
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'STATE',
+                    x: state.x,
+                    z: state.z,
+                    score: state.score,
+                    enemies: state.enemies,
+                    roleH: state.roleH,
+                    roleV: state.roleV,
+                    playing: state.playing
+                });
+            }
+        }
+
+        // RENDER LOOP
+        function render() {
+            requestAnimationFrame(render);
+
+            player.position.x = state.x;
+            player.position.z = state.z;
+
+            // Enemies Sync
+            const currentIds = new Set(state.enemies.map(e => e.id));
+
+            for (const [id, mesh] of meshMap) {
+                if (!currentIds.has(id)) {
+                    enemyGroup.remove(mesh);
+                    meshMap.delete(id);
+                }
+            }
+
+            state.enemies.forEach(e => {
+                let mesh = meshMap.get(e.id);
+                if (!mesh) {
+                    mesh = createEnemy(e.x, e.z, e.id);
+                    enemyGroup.add(mesh);
+                    meshMap.set(e.id, mesh);
+                }
+                mesh.position.x = e.x;
+                mesh.position.z = e.z;
+            });
+
+            document.getElementById('score-val').innerText = Math.floor(state.score);
+            renderer.render(scene, camera);
+        }
+        render();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        initNetwork();
+
+    </script>
+</body>
+</html>
