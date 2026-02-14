@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORBIT: Tic-Tac-Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; touch-action: none; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: 'Orbitron', sans-serif; }
+
+        #game-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        .hud-top {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            display: flex; flex-direction: column; align-items: center; pointer-events: none;
+        }
+        .status { font-size: 1.5rem; color: #fff; text-shadow: 0 0 10px #0ff; margin-bottom: 10px; }
+        .turn-indicator {
+            font-size: 1rem; padding: 5px 15px; border-radius: 5px;
+            background: rgba(0,0,0,0.5); border: 1px solid #333;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .turn-my { color: #0f0; border-color: #0f0; }
+        .turn-opp { color: #f00; border-color: #f00; }
+
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 20; pointer-events: auto;
+        }
+        .hidden { display: none !important; }
+        h1 { color: #0ff; margin-bottom: 10px; font-size: 3rem; text-shadow: 0 0 20px #0ff; }
+        p { color: #aaa; margin-bottom: 20px; }
+
+        button.retry-btn {
+            padding: 15px 40px; font-size: 1.2rem;
+            background: linear-gradient(45deg, #00ffff, #0088ff); border: none; color: #000;
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transition: transform 0.2s;
+        }
+        button.retry-btn:active { transform: scale(0.95); }
+
+        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <div id="game-ui">
+        <div class="hud-top">
+            <div class="status" id="game-status">TIC-TAC-TOE</div>
+            <div class="turn-indicator" id="turn-text">WAITING...</div>
+        </div>
+
+        <div id="loading-screen" class="screen">
+            <div id="waiting-msg">CONNECTING...</div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <h1 id="end-title">WINNER</h1>
+            <p id="end-msg">Player 1 Won!</p>
+            <button class="retry-btn" id="btn-retry">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ROOM_ID = urlParams.get('room');
+        const MY_ROLE = urlParams.get('role'); // 'host' or 'client'
+
+        if (!ROOM_ID || !MY_ROLE) {
+            window.location.href = 'index.html';
+        }
+
+        // Game State
+        const state = {
+            board: Array(9).fill(null), // null, 'X', 'O'
+            turn: 'host', // 'host' goes first (X), 'client' (O)
+            playing: false,
+            mySymbol: MY_ROLE === 'host' ? 'X' : 'O'
+        };
+
+        // UI Elements
+        const turnText = document.getElementById('turn-text');
+        const endScreen = document.getElementById('game-over-screen');
+        const endTitle = document.getElementById('end-title');
+        const endMsg = document.getElementById('end-msg');
+
+        // Network
+        let peer, conn;
+        const PEER_ID = `${ROOM_ID}-tictactoe`;
+
+        function initNetwork() {
+            if (MY_ROLE === 'host') {
+                peer = new Peer(PEER_ID);
+                peer.on('open', (id) => {
+                    console.log("Host Ready:", id);
+                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
+                });
+                peer.on('connection', (c) => handleConnection(c));
+                peer.on('error', (err) => {
+                    if (err.type === 'unavailable-id') {
+                        alert("Session invalid. Please create new room.");
+                        window.location.href = 'index.html';
+                    }
+                });
+            } else {
+                peer = new Peer();
+                peer.on('open', () => {
+                    conn = peer.connect(PEER_ID);
+                    handleConnection(conn);
+                });
+                peer.on('error', (err) => {
+                     console.error(err);
+                     alert("Connection Failed: " + err.type);
+                });
+            }
+        }
+
+        function handleConnection(connection) {
+            conn = connection;
+            conn.on('open', () => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                resetGame();
+            });
+            conn.on('data', (data) => {
+                if (data.type === 'MOVE') {
+                    applyMove(data.index, data.symbol);
+                } else if (data.type === 'RESET') {
+                    resetGame();
+                }
+            });
+            conn.on('close', () => {
+                alert("Partner Disconnected");
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Three.js Setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('game-container').appendChild(renderer.domElement);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // Grid
+        const gridGroup = new THREE.Group();
+        scene.add(gridGroup);
+
+        const cells = []; // Array of meshes for raycasting
+
+        // Create 3x3 Grid
+        // Positions: -1.1, 0, 1.1
+        const spacing = 1.2;
+        for (let i = 0; i < 9; i++) {
+            const x = (i % 3 - 1) * spacing;
+            const y = (1 - Math.floor(i / 3)) * spacing; // Top row is index 0-2 (y=1)
+
+            const geometry = new THREE.BoxGeometry(1, 1, 0.1);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x111122,
+                wireframe: false,
+                transparent: true,
+                opacity: 0.8
+            });
+            const wiregeo = new THREE.EdgesGeometry(geometry);
+            const wiremat = new THREE.LineBasicMaterial({ color: 0x00ffff });
+            const wire = new THREE.LineSegments(wiregeo, wiremat);
+
+            const cell = new THREE.Mesh(geometry, material);
+            cell.position.set(x, y, 0);
+            cell.add(wire);
+
+            cell.userData = { index: i };
+            gridGroup.add(cell);
+            cells.push(cell);
+        }
+
+        // Hover Effect & Interaction
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onPointerMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onPointerDown(event) {
+            if (!state.playing) return;
+            if (state.turn !== MY_ROLE) return;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(cells);
+
+            if (intersects.length > 0) {
+                const index = intersects[0].object.userData.index;
+                if (state.board[index] === null) {
+                    makeMove(index);
+                }
+            }
+        }
+
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerdown', onPointerDown);
+
+        // Game Logic
+        function makeMove(index) {
+            // Apply locally first for responsiveness (optimistic UI)
+            // Ideally we wait for ack, but for turn-based simple game, immediate is fine.
+            applyMove(index, state.mySymbol);
+
+            // Send to peer
+            if (conn && conn.open) {
+                conn.send({ type: 'MOVE', index: index, symbol: state.mySymbol });
+            }
+        }
+
+        function applyMove(index, symbol) {
+            if (state.board[index] !== null) return; // Already taken
+
+            state.board[index] = symbol;
+
+            // Visuals
+            const cell = cells[index];
+            createSymbol(symbol, cell.position);
+
+            // Check Win
+            if (checkWin(symbol)) {
+                endGame(symbol);
+            } else if (state.board.every(c => c !== null)) {
+                endGame('DRAW');
+            } else {
+                // Switch Turn
+                state.turn = (state.turn === 'host') ? 'client' : 'host';
+                updateTurnUI();
+            }
+        }
+
+        function createSymbol(symbol, pos) {
+            if (symbol === 'X') {
+                const size = 0.4;
+                const mat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
+
+                const g1 = new THREE.BoxGeometry(size*2.5, 0.1, 0.1);
+                const m1 = new THREE.Mesh(g1, mat);
+                m1.rotation.z = Math.PI / 4;
+
+                const m2 = new THREE.Mesh(g1, mat);
+                m2.rotation.z = -Math.PI / 4;
+
+                const group = new THREE.Group();
+                group.add(m1);
+                group.add(m2);
+                group.position.copy(pos);
+                group.position.z += 0.2; // Pop out
+                scene.add(group);
+                state.spawnedObjects.push(group);
+            } else {
+                const geometry = new THREE.TorusGeometry(0.35, 0.05, 8, 32);
+                const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                const torus = new THREE.Mesh(geometry, material);
+                torus.position.copy(pos);
+                torus.position.z += 0.2;
+                scene.add(torus);
+                state.spawnedObjects.push(torus);
+            }
+        }
+
+        function checkWin(symbol) {
+            const wins = [
+                [0,1,2], [3,4,5], [6,7,8], // Rows
+                [0,3,6], [1,4,7], [2,5,8], // Cols
+                [0,4,8], [2,4,6]           // Diagonals
+            ];
+            return wins.some(combo =>
+                combo.every(i => state.board[i] === symbol)
+            );
+        }
+
+        function updateTurnUI() {
+            const isMyTurn = state.turn === MY_ROLE;
+            turnText.innerText = isMyTurn ? "YOUR TURN" : "OPPONENT'S TURN";
+            turnText.className = isMyTurn ? "turn-indicator turn-my" : "turn-indicator turn-opp";
+        }
+
+        function resetGame() {
+            state.board = Array(9).fill(null);
+            state.playing = true;
+            state.turn = 'host'; // Always reset to Host starts? Or alternate? Let's keep it simple.
+            state.spawnedObjects = state.spawnedObjects || [];
+
+            // Clear symbols
+            state.spawnedObjects.forEach(obj => scene.remove(obj));
+            state.spawnedObjects = [];
+
+            endScreen.classList.add('hidden');
+            updateTurnUI();
+        }
+
+        function endGame(result) {
+            state.playing = false;
+            endScreen.classList.remove('hidden');
+
+            if (result === 'DRAW') {
+                endTitle.innerText = "DRAW";
+                endTitle.style.color = "#fff";
+                endMsg.innerText = "No moves left!";
+            } else if (result === state.mySymbol) {
+                endTitle.innerText = "VICTORY";
+                endTitle.style.color = "#0f0";
+                endMsg.innerText = "You Won!";
+            } else {
+                endTitle.innerText = "DEFEAT";
+                endTitle.style.color = "#f00";
+                endMsg.innerText = "Opponent Won!";
+            }
+        }
+
+        document.getElementById('btn-retry').addEventListener('click', () => {
+            if (conn && conn.open) {
+                conn.send({ type: 'RESET' });
+                resetGame();
+            }
+        });
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Hover effects
+            if (state.playing && state.turn === MY_ROLE) {
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(cells);
+
+                cells.forEach(c => {
+                    // Reset color
+                    c.material.color.setHex(0x111122);
+                    c.material.opacity = 0.8;
+                });
+
+                if (intersects.length > 0) {
+                    const obj = intersects[0].object;
+                    if (state.board[obj.userData.index] === null) {
+                        obj.material.color.setHex(0x222244);
+                        obj.material.opacity = 1.0;
+                    }
+                }
+            }
+
+            // Rotate scene slightly for 3D effect?
+            // gridGroup.rotation.y = Math.sin(Date.now() * 0.0005) * 0.1;
+            // gridGroup.rotation.x = Math.sin(Date.now() * 0.0003) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        initNetwork();
+
+    </script>
+</body>
+</html>

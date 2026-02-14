@@ -127,9 +127,10 @@
             score: 0,
             speed: 0,
             x: 0,
+            targetX: 0,
             driver: 'host',
             speeder: 'client',
-            inputSteer: 0,
+            inputSteer: 0, // Deprecated in favor of discrete steps, but kept for legacy check
             inputBoost: false,
             obstacles: []
         };
@@ -187,8 +188,15 @@
                     updateRoleUI();
                     if (!state.playing) endGame(state.score); // Sync game over
                 } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
-                    if (state.driver === 'client') state.inputSteer = data.steer;
+                    // Only boost is continuous now
                     if (state.speeder === 'client') state.inputBoost = data.boost;
+                } else if (data.type === 'INPUT_STEP' && MY_ROLE === 'host') {
+                    if (state.driver === 'client') {
+                        // Update targetX based on step
+                        const step = 2.5;
+                        state.targetX += data.dir * step;
+                        state.targetX = Math.max(-10, Math.min(10, state.targetX));
+                    }
                 } else if (data.type === 'SWAP' && MY_ROLE === 'host') {
                      const temp = state.driver;
                      state.driver = state.speeder;
@@ -267,12 +275,22 @@
         const btnRight = document.getElementById('btn-right');
         const btnBoost = document.getElementById('btn-boost');
 
-        function handleSteer(val) {
+        function triggerSteer(dir) {
             if (MY_ROLE === state.driver) {
-                state.inputSteer = val;
-                if (MY_ROLE === 'client') sendInput();
+                // If I am host, apply immediately
+                if (MY_ROLE === 'host') {
+                    const step = 2.5;
+                    state.targetX += dir * step;
+                    state.targetX = Math.max(-10, Math.min(10, state.targetX));
+                } else {
+                    // If client, send command
+                    if (conn && conn.open) {
+                        conn.send({ type: 'INPUT_STEP', dir: dir });
+                    }
+                }
             }
         }
+
         function handleBoost(val) {
             if (MY_ROLE === state.speeder) {
                 state.inputBoost = val;
@@ -280,17 +298,14 @@
             }
         }
 
-        btnLeft.addEventListener('pointerdown', () => handleSteer(-1));
-        btnLeft.addEventListener('pointerup', () => handleSteer(0));
-        btnRight.addEventListener('pointerdown', () => handleSteer(1));
-        btnRight.addEventListener('pointerup', () => handleSteer(0));
+        // Steer: Click/Tap based
+        btnLeft.addEventListener('pointerdown', () => triggerSteer(-1));
+        btnRight.addEventListener('pointerdown', () => triggerSteer(1));
 
+        // Boost: Hold based
         btnBoost.addEventListener('pointerdown', () => handleBoost(true));
         btnBoost.addEventListener('pointerup', () => handleBoost(false));
-        // Also add mouse/touch leave to prevent sticking
         btnBoost.addEventListener('pointerleave', () => handleBoost(false));
-        btnLeft.addEventListener('pointerleave', () => handleSteer(0));
-        btnRight.addEventListener('pointerleave', () => handleSteer(0));
 
         document.getElementById('btn-swap').addEventListener('click', () => {
             if (conn && conn.open) conn.send({ type: 'SWAP' });
@@ -311,7 +326,7 @@
 
         function sendInput() {
             if (conn && conn.open) {
-                conn.send({ type: 'INPUT', steer: state.inputSteer, boost: state.inputBoost });
+                conn.send({ type: 'INPUT', boost: state.inputBoost });
             }
         }
 
@@ -327,6 +342,7 @@
             state.score = 0;
             state.speed = 0;
             state.x = 0;
+            state.targetX = 0;
             state.obstacles = [];
             state.inputSteer = 0;
             state.inputBoost = false;
@@ -355,9 +371,9 @@
             state.speed += (targetSpeed - state.speed) * 0.1;
             state.score += state.speed;
 
-            // Steer (Instant)
-            state.x += state.inputSteer * 0.5;
-            state.x = Math.max(-10, Math.min(10, state.x));
+            // Steer (Smooth)
+            state.x += (state.targetX - state.x) * 0.1;
+            // state.x = Math.max(-10, Math.min(10, state.x)); // targetX is already clamped
 
             // Spawn Obstacles
             if (Math.random() < 0.05 && state.speed > 0.1) {

@@ -115,14 +115,16 @@
             score: 0,
             x: 0,
             z: 0,
+            targetX: 0,
+            targetZ: 0,
 
             // Roles
             roleH: 'host', // Who controls X?
             roleV: 'client', // Who controls Z?
 
             // Inputs
-            inputX: 0,
-            inputZ: 0,
+            inputX: 0, // Deprecated
+            inputZ: 0, // Deprecated
 
             enemies: []
         };
@@ -176,9 +178,17 @@
                     state.playing = data.playing;
                     updateRoleUI();
                     if (!state.playing) endGame(state.score);
-                } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
-                    if (state.roleH === 'client') state.inputX = data.x;
-                    if (state.roleV === 'client') state.inputZ = data.z;
+                } else if (data.type === 'INPUT_STEP' && MY_ROLE === 'host') {
+                    // Discrete steps
+                    const step = 2.0;
+                    if (data.axis === 'x' && state.roleH === 'client') {
+                        state.targetX += data.dir * step;
+                        state.targetX = Math.max(-9, Math.min(9, state.targetX));
+                    }
+                    if (data.axis === 'z' && state.roleV === 'client') {
+                        state.targetZ += data.dir * step;
+                        state.targetZ = Math.max(-9, Math.min(9, state.targetZ));
+                    }
                 } else if (data.type === 'SWAP' && MY_ROLE === 'host') {
                      const temp = state.roleH;
                      state.roleH = state.roleV;
@@ -262,36 +272,31 @@
         const btnUp = document.getElementById('btn-up');
         const btnDown = document.getElementById('btn-down');
 
-        function handleX(val) {
-            if (MY_ROLE === state.roleH) {
-                state.inputX = val;
-                if (MY_ROLE === 'client') sendInput();
+        function triggerMove(axis, dir) {
+            // Check role
+            if ((axis === 'x' && MY_ROLE === state.roleH) || (axis === 'z' && MY_ROLE === state.roleV)) {
+                if (MY_ROLE === 'host') {
+                    const step = 2.0;
+                    if (axis === 'x') {
+                        state.targetX += dir * step;
+                        state.targetX = Math.max(-9, Math.min(9, state.targetX));
+                    } else {
+                        state.targetZ += dir * step;
+                        state.targetZ = Math.max(-9, Math.min(9, state.targetZ));
+                    }
+                } else {
+                    if (conn && conn.open) {
+                        conn.send({ type: 'INPUT_STEP', axis: axis, dir: dir });
+                    }
+                }
             }
         }
-        function handleZ(val) {
-            if (MY_ROLE === state.roleV) {
-                state.inputZ = val;
-                if (MY_ROLE === 'client') sendInput();
-            }
-        }
 
-        btnLeft.addEventListener('pointerdown', () => handleX(-1));
-        btnLeft.addEventListener('pointerup', () => handleX(0));
-        btnRight.addEventListener('pointerdown', () => handleX(1));
-        btnRight.addEventListener('pointerup', () => handleX(0));
+        btnLeft.addEventListener('pointerdown', () => triggerMove('x', -1));
+        btnRight.addEventListener('pointerdown', () => triggerMove('x', 1));
 
-        btnUp.addEventListener('pointerdown', () => handleZ(-1)); // -Z is forward in Three.js
-        btnUp.addEventListener('pointerup', () => handleZ(0));
-        btnDown.addEventListener('pointerdown', () => handleZ(1));
-        btnDown.addEventListener('pointerup', () => handleZ(0));
-
-        // Prevent sticking
-        [btnLeft, btnRight, btnUp, btnDown].forEach(btn => {
-            btn.addEventListener('pointerleave', () => {
-                if(btn === btnLeft || btn === btnRight) handleX(0);
-                else handleZ(0);
-            });
-        });
+        btnUp.addEventListener('pointerdown', () => triggerMove('z', -1)); // -Z is forward
+        btnDown.addEventListener('pointerdown', () => triggerMove('z', 1));
 
         document.getElementById('btn-swap').addEventListener('click', () => {
             if (conn && conn.open) conn.send({ type: 'SWAP' });
@@ -310,12 +315,6 @@
             }
         });
 
-        function sendInput() {
-            if (conn && conn.open) {
-                conn.send({ type: 'INPUT', x: state.inputX, z: state.inputZ });
-            }
-        }
-
         function startGame() {
             resetGame();
             if (window.gameInterval) clearInterval(window.gameInterval);
@@ -327,6 +326,8 @@
             state.score = 0;
             state.x = 0;
             state.z = 0;
+            state.targetX = 0;
+            state.targetZ = 0;
             state.enemies = [];
             state.inputX = 0;
             state.inputZ = 0;
@@ -349,14 +350,12 @@
         function gameLoop() {
             if (!state.playing) return;
 
-            // Move Player (Instant)
-            const speed = 0.2;
-            state.x += state.inputX * speed;
-            state.z += state.inputZ * speed;
+            // Move Player (Smooth)
+            state.x += (state.targetX - state.x) * 0.2;
+            state.z += (state.targetZ - state.z) * 0.2;
 
-            // Clamp to Arena (-10 to 10)
-            state.x = Math.max(-9.5, Math.min(9.5, state.x));
-            state.z = Math.max(-9.5, Math.min(9.5, state.z));
+            // Clamp is handled in target setting, but keep safety
+            // state.x = Math.max(-9.5, Math.min(9.5, state.x));
 
             state.score += 0.1;
 

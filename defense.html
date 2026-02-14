@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORBIT: Core Defense</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; touch-action: none; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; overflow: hidden; background: #000; color: #fff; font-family: 'Orbitron', sans-serif; }
+
+        #game-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        .hud-top {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            display: flex; justify-content: space-between; padding: 0 20px;
+        }
+        .score { font-size: 2rem; color: #0ff; text-shadow: 0 0 10px #0ff; }
+        .role-display { font-size: 1rem; color: #fff; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px; border: 1px solid #333; }
+        .hp-bar { width: 200px; height: 20px; background: #333; border: 1px solid #fff; margin-top: 10px; }
+        .hp-fill { width: 100%; height: 100%; background: #0f0; transition: width 0.2s; }
+
+        .controls-layer {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 40%;
+            display: flex; pointer-events: auto; padding: 20px; gap: 20px;
+        }
+
+        .btn-rotate {
+            flex: 1; background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #0ff;
+        }
+        .btn-rotate:active { background: rgba(0, 255, 255, 0.3); color: #fff; }
+
+        .btn-action {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: rgba(255, 0, 85, 0.2); border: 2px solid #ff0055;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1rem; color: #ff0055;
+            align-self: center;
+        }
+        .btn-action:active { background: rgba(255, 0, 85, 0.5); color: #fff; }
+
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 20; pointer-events: auto;
+        }
+        .hidden { display: none !important; }
+        h1 { color: #ff0055; margin-bottom: 10px; font-size: 3rem; }
+
+        button.retry-btn {
+            margin-top: 20px; padding: 15px 40px; font-size: 1.2rem;
+            background: #ff0055; border: none; color: #fff; font-family: 'Orbitron';
+            cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+        }
+
+        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <div id="game-ui">
+        <div class="hud-top">
+            <div class="role-display" id="my-role-text">ROLE: ???</div>
+            <div>
+                <div class="score">WAVE: <span id="score-val">1</span></div>
+                <div class="hp-bar"><div class="hp-fill" id="core-hp"></div></div>
+            </div>
+        </div>
+
+        <div class="controls-layer hidden" id="controls">
+            <div class="btn-rotate" id="btn-left">↺</div>
+            <div class="btn-action" id="btn-shoot">FIRE</div>
+            <div class="btn-rotate" id="btn-right">↻</div>
+        </div>
+
+        <div id="loading-screen" class="screen">
+            <div id="waiting-msg">CONNECTING...</div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <h1>CORE DESTROYED</h1>
+            <p>Waves Survived: <span id="final-score">0</span></p>
+            <button class="retry-btn" id="btn-retry">RETRY</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ROOM_ID = urlParams.get('room');
+        const MY_ROLE = urlParams.get('role');
+
+        if (!ROOM_ID || !MY_ROLE) {
+            window.location.href = 'index.html';
+        }
+
+        // State
+        const state = {
+            playing: false,
+            wave: 1,
+            coreHP: 100,
+
+            // Entities
+            turretAngle: 0,
+            shieldAngle: Math.PI, // Opposite side
+            projectiles: [],
+            enemies: [],
+
+            // Inputs
+            inputRotate: 0,
+            inputShoot: false
+        };
+
+        // Network
+        let peer, conn;
+        const PEER_ID = `${ROOM_ID}-defense`;
+
+        function initNetwork() {
+            if (MY_ROLE === 'host') {
+                peer = new Peer(PEER_ID);
+                peer.on('open', (id) => {
+                    console.log("Host Ready:", id);
+                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
+                });
+                peer.on('connection', (c) => handleConnection(c));
+                peer.on('error', (err) => {
+                    if (err.type === 'unavailable-id') {
+                        alert("Session invalid. Please create new room.");
+                        window.location.href = 'index.html';
+                    }
+                });
+            } else {
+                peer = new Peer();
+                peer.on('open', () => {
+                    conn = peer.connect(PEER_ID);
+                    handleConnection(conn);
+                });
+                peer.on('error', (err) => {
+                     console.error(err);
+                     alert("Connection Failed: " + err.type);
+                });
+            }
+        }
+
+        function handleConnection(connection) {
+            conn = connection;
+            conn.on('open', () => {
+                document.getElementById('loading-screen').classList.add('hidden');
+                document.getElementById('controls').classList.remove('hidden');
+                updateRoleUI();
+                if (MY_ROLE === 'host') startGame();
+            });
+            conn.on('data', (data) => {
+                if (data.type === 'STATE' && MY_ROLE === 'client') {
+                    // Sync state
+                    state.coreHP = data.coreHP;
+                    state.wave = data.wave;
+                    state.turretAngle = data.turretAngle;
+                    state.shieldAngle = data.shieldAngle;
+                    state.enemies = data.enemies;
+                    state.projectiles = data.projectiles;
+                    state.playing = data.playing;
+
+                    updateUI();
+                    if (!state.playing) endGame(state.wave);
+                } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
+                    // Client is Shield
+                    state.inputRotate = data.rotate;
+                } else if (data.type === 'RESTART') {
+                    resetGame();
+                    startGame();
+                }
+            });
+            conn.on('close', () => {
+                alert("Partner Disconnected");
+                window.location.href = 'index.html';
+            });
+        }
+
+        function updateRoleUI() {
+            const isGunner = (MY_ROLE === 'host');
+            document.getElementById('my-role-text').innerText = isGunner ? "ROLE: GUNNER (Turret)" : "ROLE: ENGINEER (Shield)";
+
+            if (!isGunner) {
+                document.getElementById('btn-shoot').style.display = 'none'; // Only gunner shoots
+            }
+        }
+
+        // Three.js
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x050510);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 30, 0); // Top down
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('game-container').appendChild(renderer.domElement);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(0, 10, 0);
+        scene.add(pointLight);
+
+        // Core
+        const coreGeo = new THREE.SphereGeometry(2, 32, 32);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        scene.add(core);
+
+        // Turret
+        const turretGeo = new THREE.BoxGeometry(0.5, 0.5, 3);
+        const turretMat = new THREE.MeshBasicMaterial({ color: 0xff0055 });
+        const turret = new THREE.Mesh(turretGeo, turretMat);
+        turret.position.y = 2.5;
+        scene.add(turret);
+
+        // Shield
+        const shieldGeo = new THREE.TorusGeometry(5, 0.2, 8, 24, Math.PI / 2); // Quarter circle
+        const shieldMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const shield = new THREE.Mesh(shieldGeo, shieldMat);
+        shield.rotation.x = Math.PI / 2;
+        scene.add(shield);
+
+        // Enemy & Projectile Groups
+        const enemyGroup = new THREE.Group();
+        const projGroup = new THREE.Group();
+        scene.add(enemyGroup);
+        scene.add(projGroup);
+
+        const meshMap = new Map(); // id -> mesh
+
+        function createEnemyMesh(x, z, id) {
+            const geo = new THREE.SphereGeometry(0.8, 8, 8);
+            const mat = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, 0, z);
+            mesh.userData = { id: id };
+            return mesh;
+        }
+
+        function createProjMesh(x, z, id) {
+            const geo = new THREE.SphereGeometry(0.3);
+            const mat = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set(x, 0, z);
+            mesh.userData = { id: id };
+            return mesh;
+        }
+
+        // Input
+        const btnLeft = document.getElementById('btn-left');
+        const btnRight = document.getElementById('btn-right');
+        const btnShoot = document.getElementById('btn-shoot');
+
+        // Continuous rotation for smooth control? Or discrete steps?
+        // Let's do continuous while holding for rotation.
+        let rotateInterval;
+
+        function startRotate(dir) {
+            if (rotateInterval) clearInterval(rotateInterval);
+            rotateInterval = setInterval(() => {
+                if (MY_ROLE === 'host') {
+                    // Host rotates turret
+                    state.turretAngle += dir * 0.1;
+                } else {
+                    // Client sends rotate command
+                    if (conn && conn.open) conn.send({ type: 'INPUT', rotate: dir });
+                }
+            }, 50);
+        }
+
+        function stopRotate() {
+            if (rotateInterval) clearInterval(rotateInterval);
+            if (MY_ROLE !== 'host' && conn && conn.open) {
+                conn.send({ type: 'INPUT', rotate: 0 }); // Stop
+            }
+        }
+
+        btnLeft.addEventListener('pointerdown', () => startRotate(1)); // Left = CCW
+        btnLeft.addEventListener('pointerup', stopRotate);
+        btnLeft.addEventListener('pointerleave', stopRotate);
+
+        btnRight.addEventListener('pointerdown', () => startRotate(-1)); // Right = CW
+        btnRight.addEventListener('pointerup', stopRotate);
+        btnRight.addEventListener('pointerleave', stopRotate);
+
+        btnShoot.addEventListener('click', () => {
+            if (MY_ROLE === 'host') {
+                spawnProjectile();
+            }
+        });
+
+        document.getElementById('btn-retry').addEventListener('click', () => {
+            if (MY_ROLE === 'host') {
+                conn.send({ type: 'RESTART' });
+                resetGame();
+                startGame();
+            }
+        });
+
+        // Game Logic (Host Only)
+        function spawnProjectile() {
+            const speed = 0.5;
+            const vx = Math.sin(state.turretAngle) * speed; // 0 angle = +Z?
+            // Turret geometry is length 3 along Z.
+            // If angle 0, points +Z?
+            // We rotated box. Default box is along Z?
+            // Let's assume Angle 0 is +Z.
+            // sin(0)=0, cos(0)=1. So Z should be cos.
+
+            const vz = Math.cos(state.turretAngle) * speed;
+            const vx_actual = Math.sin(state.turretAngle) * speed;
+
+            state.projectiles.push({
+                id: Math.random().toString(36),
+                x: 0,
+                z: 0,
+                vx: vx_actual,
+                vz: vz
+            });
+        }
+
+        function resetGame() {
+            state.playing = false;
+            state.coreHP = 100;
+            state.wave = 1;
+            state.enemies = [];
+            state.projectiles = [];
+
+            document.getElementById('game-over-screen').classList.add('hidden');
+            updateUI();
+        }
+
+        function startGame() {
+            state.playing = true;
+            if (window.gameInterval) clearInterval(window.gameInterval);
+            window.gameInterval = setInterval(gameLoop, 30); // 30ms ~ 30fps logic
+        }
+
+        function endGame(wave) {
+            state.playing = false;
+            clearInterval(window.gameInterval);
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = wave;
+        }
+
+        function updateUI() {
+            document.getElementById('score-val').innerText = state.wave;
+            document.getElementById('core-hp').style.width = state.coreHP + "%";
+            if (state.coreHP < 30) document.getElementById('core-hp').style.background = "#f00";
+            else document.getElementById('core-hp').style.background = "#0f0";
+        }
+
+        function gameLoop() {
+            if (!state.playing) return;
+
+            // Host Input Processing
+            // Gunner is Host, rotation handled directly.
+            // Shield is Client, inputRotate comes from network.
+            state.shieldAngle += state.inputRotate * 0.1;
+
+            // Spawn Enemies
+            if (Math.random() < 0.02 * state.wave) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 20;
+                state.enemies.push({
+                    id: Math.random().toString(36),
+                    x: Math.sin(angle) * dist,
+                    z: Math.cos(angle) * dist,
+                    speed: 0.1 + (state.wave * 0.01)
+                });
+            }
+
+            // Move Projectiles
+            for (let i = state.projectiles.length - 1; i >= 0; i--) {
+                const p = state.projectiles[i];
+                p.x += p.vx;
+                p.z += p.vz;
+
+                if (Math.abs(p.x) > 30 || Math.abs(p.z) > 30) {
+                    state.projectiles.splice(i, 1);
+                }
+            }
+
+            // Move Enemies & Collision
+            for (let i = state.enemies.length - 1; i >= 0; i--) {
+                const e = state.enemies[i];
+                // Move towards 0,0
+                const angle = Math.atan2(e.x, e.z); // Note: atan2(y, x). Here x=x, y=z.
+                // Wait, atan2(y, x) -> atan2(x, z) gives angle from Z axis?
+                // Let's just normalize vector.
+                const dist = Math.sqrt(e.x*e.x + e.z*e.z);
+                e.x -= (e.x / dist) * e.speed;
+                e.z -= (e.z / dist) * e.speed;
+
+                // Check collision with Shield
+                // Shield is at distance 5. Arc is PI/2 wide.
+                if (dist < 5.5 && dist > 4.5) {
+                    const enemyAngle = Math.atan2(e.x, e.z); // -PI to PI
+                    // Normalize angles
+                    let diff = enemyAngle - state.shieldAngle;
+                    // Wrap diff to -PI, PI
+                    while (diff > Math.PI) diff -= Math.PI*2;
+                    while (diff < -Math.PI) diff += Math.PI*2;
+
+                    // Shield covers PI/2 (90 deg), so +/- PI/4 (45 deg) from center
+                    if (Math.abs(diff) < Math.PI / 4) {
+                        // Blocked!
+                        state.enemies.splice(i, 1);
+                        continue;
+                    }
+                }
+
+                // Check collision with Core
+                if (dist < 2.5) {
+                    state.coreHP -= 10;
+                    state.enemies.splice(i, 1);
+                    if (state.coreHP <= 0) endGame(state.wave);
+                    continue;
+                }
+
+                // Check collision with Projectiles
+                for (let j = state.projectiles.length - 1; j >= 0; j--) {
+                    const p = state.projectiles[j];
+                    const pdx = p.x - e.x;
+                    const pdz = p.z - e.z;
+                    if (Math.sqrt(pdx*pdx + pdz*pdz) < 1.0) {
+                        // Kill
+                        state.enemies.splice(i, 1);
+                        state.projectiles.splice(j, 1);
+                        break;
+                    }
+                }
+            }
+
+            // Sync
+            if (conn && conn.open) {
+                conn.send({
+                    type: 'STATE',
+                    coreHP: state.coreHP,
+                    wave: state.wave,
+                    turretAngle: state.turretAngle,
+                    shieldAngle: state.shieldAngle,
+                    enemies: state.enemies,
+                    projectiles: state.projectiles,
+                    playing: state.playing
+                });
+            }
+        }
+
+        function render() {
+            requestAnimationFrame(render);
+
+            // Render Static Objects
+            turret.rotation.y = state.turretAngle;
+            shield.rotation.z = -state.shieldAngle; // Rotate around Z axis because geometry is rotated X?
+            // Geometry was: Torus radius 5, rotated X=PI/2.
+            // So it lies flat on XZ plane.
+            // Rotation around Y axis rotates it around core.
+            shield.rotation.y = state.shieldAngle;
+            shield.rotation.x = Math.PI / 2; // Keep flat
+            shield.rotation.z = 0;
+
+            // Sync Groups
+            syncGroup(enemyGroup, state.enemies, createEnemyMesh);
+            syncGroup(projGroup, state.projectiles, createProjMesh);
+
+            renderer.render(scene, camera);
+        }
+
+        function syncGroup(group, dataArray, createFn) {
+            const currentIds = new Set(dataArray.map(e => e.id));
+
+            // Remove old
+            for (let i = group.children.length - 1; i >= 0; i--) {
+                const mesh = group.children[i];
+                if (!currentIds.has(mesh.userData.id)) {
+                    group.remove(mesh);
+                }
+            }
+
+            // Add/Update new
+            dataArray.forEach(d => {
+                let mesh = group.children.find(c => c.userData.id === d.id);
+                if (!mesh) {
+                    mesh = createFn(d.x, d.z, d.id);
+                    group.add(mesh);
+                }
+                mesh.position.x = d.x;
+                mesh.position.z = d.z;
+            });
+        }
+
+        render();
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        initNetwork();
+
+    </script>
+</body>
+</html>
