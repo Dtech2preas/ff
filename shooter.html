@@ -64,8 +64,12 @@
             cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
         }
 
-        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        #btn-exit {
+            position: absolute; top: 80px; left: 20px; pointer-events: auto;
+            background: #333; color: #fff; border: 1px solid #555;
+            padding: 8px 12px; font-family: 'Orbitron'; cursor: pointer;
+            z-index: 100; font-size: 0.8rem;
+        }
 
     </style>
 </head>
@@ -85,14 +89,12 @@
             </div>
         </div>
 
+        <button id="btn-exit">EXIT</button>
+
         <div class="controls-layer hidden" id="controls">
             <div class="btn-move" id="btn-left">◀</div>
             <div class="btn-shoot" id="btn-shoot">FIRE</div>
             <div class="btn-move" id="btn-right">▶</div>
-        </div>
-
-        <div id="loading-screen" class="screen">
-            <div id="waiting-msg">CONNECTING...</div>
         </div>
 
         <div id="game-over-screen" class="screen hidden">
@@ -102,16 +104,15 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const ROOM_ID = urlParams.get('room');
         const MY_ROLE = urlParams.get('role');
 
-        if (!ROOM_ID || !MY_ROLE) {
-            window.location.href = 'index.html';
+        if (!MY_ROLE) {
+             document.body.innerHTML = "<h1 style='color:white'>Error: No Role Assigned</h1>";
+             throw new Error("No Role");
         }
 
         // State
@@ -125,82 +126,38 @@
             lastShotTime: 0
         };
 
-        // Network
-        let peer, conn;
-        const PEER_ID = `${ROOM_ID}-shooter`;
-
-        function initNetwork() {
-            if (MY_ROLE === 'host') {
-                peer = new Peer(PEER_ID);
-                peer.on('open', (id) => {
-                    console.log("Host Ready:", id);
-                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
-                });
-                peer.on('connection', (c) => handleConnection(c));
-                peer.on('error', (err) => {
-                    if (err.type === 'unavailable-id') {
-                        alert("Session invalid. Please create new room.");
-                        window.location.href = 'index.html';
-                    }
-                });
-            } else {
-                peer = new Peer();
-                peer.on('open', () => {
-                    conn = peer.connect(PEER_ID);
-                    handleConnection(conn);
-                });
-                peer.on('error', (err) => {
-                     console.error(err);
-                     alert("Connection Failed: " + err.type);
-                });
-            }
+        // Network Bridge
+        function send(data) {
+            window.parent.postMessage(data, '*');
         }
 
-        function handleConnection(connection) {
-            conn = connection;
-            conn.on('open', () => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('controls').classList.remove('hidden');
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data.type === 'MOVE') {
+                state.opp.targetX = data.x;
+            } else if (data.type === 'SHOOT') {
+                spawnProjectile(data.x, state.opp.role);
+            } else if (data.type === 'HIT') {
+                // I hit them (they confirmed it)
+                state.opp.hp = data.hp;
+                updateHealthUI();
+                if (state.opp.hp <= 0) endGame(true);
+            } else if (data.type === 'RESTART') {
                 resetGame();
                 startGame();
-            });
-            conn.on('data', (data) => {
-                if (data.type === 'MOVE') {
-                    state.opp.targetX = data.x;
-                } else if (data.type === 'SHOOT') {
-                    spawnProjectile(data.x, state.opp.role);
-                } else if (data.type === 'HIT') {
-                    // I hit them (they confirmed it)
-                    state.opp.hp = data.hp;
-                    updateHealthUI();
-                    if (state.opp.hp <= 0) endGame(true);
-                } else if (data.type === 'RESTART') {
-                    resetGame();
-                    startGame();
-                }
-            });
-            conn.on('close', () => {
-                alert("Partner Disconnected");
-                window.location.href = 'index.html';
-            });
-        }
+            }
+        });
+
+        // Initialize
+        document.getElementById('controls').classList.remove('hidden');
+        resetGame();
+        startGame();
 
         // Three.js
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x050510);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        // Camera position depends on role?
-        // Let's keep camera static and just swap ship positions visually?
-        // Actually, easier if Camera is always behind "Me".
-        // Host is at Z=10 looking at Z=-10?
-        // Client is at Z=-10 looking at Z=10?
-        // Let's standardise: Camera at (0, 5, 15) looking at (0, 0, -5).
-        // My Ship is always at Z=10 (bottom of screen).
-        // Opponent Ship is always at Z=-10 (top of screen).
-        // When sending coordinates, if I am Host, my Z is +10. If I am Client, my Z is -10.
-        // Wait, if I always see myself at bottom, I need to invert Z for rendering if I am Client.
-
         camera.position.set(0, 15, 15);
         camera.lookAt(0, 0, -5);
 
@@ -244,9 +201,7 @@
             state.me.targetX += dir * step;
             state.me.targetX = Math.max(-15, Math.min(15, state.me.targetX));
 
-            if (conn && conn.open) {
-                conn.send({ type: 'MOVE', x: state.me.targetX });
-            }
+            send({ type: 'MOVE', x: state.me.targetX });
         }
 
         function triggerShoot() {
@@ -255,9 +210,7 @@
             state.lastShotTime = now;
 
             spawnProjectile(state.me.x, state.me.role);
-            if (conn && conn.open) {
-                conn.send({ type: 'SHOOT', x: state.me.x });
-            }
+            send({ type: 'SHOOT', x: state.me.x });
         }
 
         document.getElementById('btn-left').addEventListener('pointerdown', () => triggerMove(-1));
@@ -265,11 +218,13 @@
         document.getElementById('btn-shoot').addEventListener('pointerdown', () => triggerShoot());
 
         document.getElementById('btn-retry').addEventListener('click', () => {
-            if (conn && conn.open) {
-                conn.send({ type: 'RESTART' });
-                resetGame();
-                startGame();
-            }
+            send({ type: 'RESTART' });
+            resetGame();
+            startGame();
+        });
+
+        document.getElementById('btn-exit').addEventListener('click', () => {
+             send({ type: 'GAME_EXIT' });
         });
 
         // Game Logic
@@ -355,12 +310,6 @@
                 const p = state.projectiles[i];
                 const isMine = p.owner === state.me.role;
 
-                // Move logic: Mine moves -Z (away), Opp moves +Z (towards me)
-                // Wait, coordinate system:
-                // Me: Z=10. Enemy: Z=-10.
-                // My bullets go from 10 -> -10 (-Z).
-                // Enemy bullets go from -10 -> 10 (+Z).
-
                 if (isMine) p.z -= speed;
                 else p.z += speed;
 
@@ -375,7 +324,7 @@
                         updateHealthUI();
 
                         // Notify peer
-                        conn.send({ type: 'HIT', hp: state.me.hp });
+                        send({ type: 'HIT', hp: state.me.hp });
 
                         // Remove bullet
                         projectileGroup.remove(p.mesh);
@@ -410,8 +359,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        initNetwork();
 
     </script>
 </body>
