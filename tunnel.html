@@ -56,6 +56,13 @@
             z-index: 100; font-size: 0.8rem;
         }
 
+        #btn-exit {
+            position: absolute; top: 80px; left: 20px; pointer-events: auto;
+            background: #333; color: #fff; border: 1px solid #555;
+            padding: 8px 12px; font-family: 'Orbitron'; cursor: pointer;
+            z-index: 100; font-size: 0.8rem;
+        }
+
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
@@ -70,9 +77,6 @@
             cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
         }
 
-        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
-
     </style>
 </head>
 <body>
@@ -86,6 +90,7 @@
         </div>
 
         <button id="btn-swap">SWAP ROLES</button>
+        <button id="btn-exit">EXIT</button>
 
         <div id="controls-driver" class="controls-layer hidden">
             <div class="steer-zone steer-left" id="btn-left">◀ LEFT</div>
@@ -98,10 +103,6 @@
             </div>
         </div>
 
-        <div id="loading-screen" class="screen">
-            <div id="waiting-msg">CONNECTING...</div>
-        </div>
-
         <div id="game-over-screen" class="screen hidden">
             <h1>CRASHED</h1>
             <p>Distance: <span id="final-score">0</span></p>
@@ -109,16 +110,15 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const ROOM_ID = urlParams.get('room');
         const MY_ROLE = urlParams.get('role');
 
-        if (!ROOM_ID || !MY_ROLE) {
-            window.location.href = 'index.html';
+        if (!MY_ROLE) {
+             document.body.innerHTML = "<h1 style='color:white'>Error: No Role Assigned</h1>";
+             throw new Error("No Role");
         }
 
         // State
@@ -135,84 +135,49 @@
             obstacles: []
         };
 
-        // Network
-        let peer, conn;
-        const PEER_ID = `${ROOM_ID}-tunnel`;
-
-        function initNetwork() {
-            if (MY_ROLE === 'host') {
-                peer = new Peer(PEER_ID);
-                peer.on('open', (id) => {
-                    console.log("Host Ready:", id);
-                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
-                });
-                peer.on('connection', (c) => handleConnection(c));
-                peer.on('error', (err) => {
-                    if (err.type === 'unavailable-id') {
-                        // Host ID conflict - maybe user reloaded page?
-                        // Let's try appending a random suffix? No, client won't know it.
-                        // Assume session is dead, redirect to lobby.
-                        alert("Session invalid. Please create new room.");
-                        window.location.href = 'index.html';
-                    }
-                });
-            } else {
-                peer = new Peer();
-                peer.on('open', () => {
-                    conn = peer.connect(PEER_ID);
-                    handleConnection(conn);
-                });
-                peer.on('error', (err) => {
-                     console.error(err);
-                     alert("Connection Failed: " + err.type);
-                });
-            }
+        // Network Bridge
+        function send(data) {
+            window.parent.postMessage(data, '*');
         }
 
-        function handleConnection(connection) {
-            conn = connection;
-            conn.on('open', () => {
-                document.getElementById('loading-screen').classList.add('hidden');
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data.type === 'STATE' && MY_ROLE === 'client') {
+                state.x = data.x;
+                state.speed = data.speed;
+                state.score = data.score;
+                state.obstacles = data.obstacles; // Full sync
+                state.driver = data.driver;
+                state.speeder = data.speeder;
+                state.playing = data.playing;
                 updateRoleUI();
-                if (MY_ROLE === 'host') startGame();
-            });
-            conn.on('data', (data) => {
-                if (data.type === 'STATE' && MY_ROLE === 'client') {
-                    state.x = data.x;
-                    state.speed = data.speed;
-                    state.score = data.score;
-                    state.obstacles = data.obstacles; // Full sync
-                    state.driver = data.driver;
-                    state.speeder = data.speeder;
-                    state.playing = data.playing;
-                    updateRoleUI();
-                    if (!state.playing) endGame(state.score); // Sync game over
-                } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
-                    // Only boost is continuous now
-                    if (state.speeder === 'client') state.inputBoost = data.boost;
-                } else if (data.type === 'INPUT_STEP' && MY_ROLE === 'host') {
-                    if (state.driver === 'client') {
-                        // Update targetX based on step
-                        const step = 2.5;
-                        state.targetX += data.dir * step;
-                        state.targetX = Math.max(-10, Math.min(10, state.targetX));
-                    }
-                } else if (data.type === 'SWAP' && MY_ROLE === 'host') {
-                     const temp = state.driver;
-                     state.driver = state.speeder;
-                     state.speeder = temp;
-                     updateRoleUI();
-                } else if (data.type === 'GAME_OVER') {
-                    endGame(data.score);
-                } else if (data.type === 'RESTART') {
-                    resetGame();
+                if (!state.playing) endGame(state.score); // Sync game over
+            } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
+                // Only boost is continuous now
+                if (state.speeder === 'client') state.inputBoost = data.boost;
+            } else if (data.type === 'INPUT_STEP' && MY_ROLE === 'host') {
+                if (state.driver === 'client') {
+                    // Update targetX based on step
+                    // MODIFIED STEP SIZE from 2.5 to 1.5
+                    const step = 1.5;
+                    state.targetX += data.dir * step;
+                    state.targetX = Math.max(-10, Math.min(10, state.targetX));
                 }
-            });
-            conn.on('close', () => {
-                alert("Partner Disconnected");
-                window.location.href = 'index.html';
-            });
-        }
+            } else if (data.type === 'SWAP' && MY_ROLE === 'host') {
+                 const temp = state.driver;
+                 state.driver = state.speeder;
+                 state.speeder = temp;
+                 updateRoleUI();
+            } else if (data.type === 'GAME_OVER') {
+                endGame(data.score);
+            } else if (data.type === 'RESTART') {
+                resetGame();
+            }
+        });
+
+        // Initialize
+        // Host starts immediately, client waits for state
+        if (MY_ROLE === 'host') startGame();
 
         function updateRoleUI() {
             const amIDriver = (MY_ROLE === state.driver);
@@ -279,14 +244,13 @@
             if (MY_ROLE === state.driver) {
                 // If I am host, apply immediately
                 if (MY_ROLE === 'host') {
-                    const step = 2.5;
+                    // MODIFIED STEP SIZE
+                    const step = 1.5;
                     state.targetX += dir * step;
                     state.targetX = Math.max(-10, Math.min(10, state.targetX));
                 } else {
                     // If client, send command
-                    if (conn && conn.open) {
-                        conn.send({ type: 'INPUT_STEP', dir: dir });
-                    }
+                    send({ type: 'INPUT_STEP', dir: dir });
                 }
             }
         }
@@ -308,7 +272,7 @@
         btnBoost.addEventListener('pointerleave', () => handleBoost(false));
 
         document.getElementById('btn-swap').addEventListener('click', () => {
-            if (conn && conn.open) conn.send({ type: 'SWAP' });
+            send({ type: 'SWAP' });
             if (MY_ROLE === 'host') {
                 const temp = state.driver;
                 state.driver = state.speeder;
@@ -317,21 +281,24 @@
             }
         });
 
+        document.getElementById('btn-exit').addEventListener('click', () => {
+             send({ type: 'GAME_EXIT' });
+        });
+
         document.getElementById('btn-retry').addEventListener('click', () => {
             if (MY_ROLE === 'host') {
-                conn.send({ type: 'RESTART' });
+                send({ type: 'RESTART' });
                 startGame();
             }
         });
 
         function sendInput() {
-            if (conn && conn.open) {
-                conn.send({ type: 'INPUT', boost: state.inputBoost });
-            }
+            send({ type: 'INPUT', boost: state.inputBoost });
         }
 
         function startGame() {
             resetGame();
+            updateRoleUI(); // Set initial UI
             // Start Logic Loop
             if (window.gameInterval) clearInterval(window.gameInterval);
             window.gameInterval = setInterval(gameLoop, 16);
@@ -390,7 +357,7 @@
 
                 // Collision
                 if (o.z > -2 && o.z < 2 && Math.abs(o.x - state.x) < 2.5) {
-                    conn.send({ type: 'GAME_OVER', score: state.score });
+                    send({ type: 'GAME_OVER', score: state.score });
                     endGame(state.score);
                     return;
                 }
@@ -399,18 +366,16 @@
             }
 
             // Sync
-            if (conn && conn.open) {
-                conn.send({
-                    type: 'STATE',
-                    x: state.x,
-                    speed: state.speed,
-                    score: state.score,
-                    obstacles: state.obstacles,
-                    driver: state.driver,
-                    speeder: state.speeder,
-                    playing: state.playing
-                });
-            }
+            send({
+                type: 'STATE',
+                x: state.x,
+                speed: state.speed,
+                score: state.score,
+                obstacles: state.obstacles,
+                driver: state.driver,
+                speeder: state.speeder,
+                playing: state.playing
+            });
         }
 
         // RENDER LOOP
@@ -458,8 +423,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        initNetwork();
 
     </script>
 </body>

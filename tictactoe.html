@@ -25,13 +25,13 @@
         .turn-opp { color: #f00; border-color: #f00; }
 
         .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
+            position: absolute; top: 0; left: 10%; width: 80%; height: 100%;
+            display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 20; pointer-events: auto;
         }
         .hidden { display: none !important; }
         h1 { color: #0ff; margin-bottom: 10px; font-size: 3rem; text-shadow: 0 0 20px #0ff; }
-        p { color: #aaa; margin-bottom: 20px; }
+        p { color: #aaa; margin-bottom: 20px; text-align: center; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 10px; }
 
         button.retry-btn {
             padding: 15px 40px; font-size: 1.2rem;
@@ -39,11 +39,15 @@
             font-family: 'Orbitron'; font-weight: bold; cursor: pointer;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
             transition: transform 0.2s;
+            margin-top: 10px;
         }
         button.retry-btn:active { transform: scale(0.95); }
 
-        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        #btn-exit {
+            position: absolute; top: 20px; right: 20px; pointer-events: auto;
+            background: #333; color: #fff; border: 1px solid #555;
+            padding: 5px 10px; font-size: 0.8rem; cursor: pointer;
+        }
 
     </style>
 </head>
@@ -52,13 +56,10 @@
     <div id="game-container"></div>
 
     <div id="game-ui">
+        <button id="btn-exit">EXIT</button>
         <div class="hud-top">
             <div class="status" id="game-status">TIC-TAC-TOE</div>
             <div class="turn-indicator" id="turn-text">WAITING...</div>
-        </div>
-
-        <div id="loading-screen" class="screen">
-            <div id="waiting-msg">CONNECTING...</div>
         </div>
 
         <div id="game-over-screen" class="screen hidden">
@@ -68,16 +69,16 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const ROOM_ID = urlParams.get('room');
+        // const ROOM_ID = urlParams.get('room'); // Not needed for logic, only for legacy check if any
         const MY_ROLE = urlParams.get('role'); // 'host' or 'client'
 
-        if (!ROOM_ID || !MY_ROLE) {
-            window.location.href = 'index.html';
+        if (!MY_ROLE) {
+            document.body.innerHTML = "<h1 style='color:white'>Error: No Role Assigned</h1>";
+            throw new Error("No Role");
         }
 
         // Game State
@@ -94,55 +95,22 @@
         const endTitle = document.getElementById('end-title');
         const endMsg = document.getElementById('end-msg');
 
-        // Network
-        let peer, conn;
-        const PEER_ID = `${ROOM_ID}-tictactoe`;
-
-        function initNetwork() {
-            if (MY_ROLE === 'host') {
-                peer = new Peer(PEER_ID);
-                peer.on('open', (id) => {
-                    console.log("Host Ready:", id);
-                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
-                });
-                peer.on('connection', (c) => handleConnection(c));
-                peer.on('error', (err) => {
-                    if (err.type === 'unavailable-id') {
-                        alert("Session invalid. Please create new room.");
-                        window.location.href = 'index.html';
-                    }
-                });
-            } else {
-                peer = new Peer();
-                peer.on('open', () => {
-                    conn = peer.connect(PEER_ID);
-                    handleConnection(conn);
-                });
-                peer.on('error', (err) => {
-                     console.error(err);
-                     alert("Connection Failed: " + err.type);
-                });
-            }
+        // Network Bridge
+        function send(data) {
+            window.parent.postMessage(data, '*');
         }
 
-        function handleConnection(connection) {
-            conn = connection;
-            conn.on('open', () => {
-                document.getElementById('loading-screen').classList.add('hidden');
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data.type === 'MOVE') {
+                applyMove(data.index, data.symbol);
+            } else if (data.type === 'RESET') {
                 resetGame();
-            });
-            conn.on('data', (data) => {
-                if (data.type === 'MOVE') {
-                    applyMove(data.index, data.symbol);
-                } else if (data.type === 'RESET') {
-                    resetGame();
-                }
-            });
-            conn.on('close', () => {
-                alert("Partner Disconnected");
-                window.location.href = 'index.html';
-            });
-        }
+            }
+        });
+
+        // Initialize immediately
+        // No waiting for connection, parent handles it.
 
         // Three.js Setup
         const scene = new THREE.Scene();
@@ -200,6 +168,7 @@
         const mouse = new THREE.Vector2();
 
         function onPointerMove(event) {
+            // Only visual hover update
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         }
@@ -207,6 +176,10 @@
         function onPointerDown(event) {
             if (!state.playing) return;
             if (state.turn !== MY_ROLE) return;
+
+            // BUG FIX: Update mouse coordinates explicitly on click to ensure accuracy
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(cells);
@@ -224,14 +197,8 @@
 
         // Game Logic
         function makeMove(index) {
-            // Apply locally first for responsiveness (optimistic UI)
-            // Ideally we wait for ack, but for turn-based simple game, immediate is fine.
             applyMove(index, state.mySymbol);
-
-            // Send to peer
-            if (conn && conn.open) {
-                conn.send({ type: 'MOVE', index: index, symbol: state.mySymbol });
-            }
+            send({ type: 'MOVE', index: index, symbol: state.mySymbol });
         }
 
         function applyMove(index, symbol) {
@@ -305,7 +272,7 @@
         function resetGame() {
             state.board = Array(9).fill(null);
             state.playing = true;
-            state.turn = 'host'; // Always reset to Host starts? Or alternate? Let's keep it simple.
+            state.turn = 'host';
             state.spawnedObjects = state.spawnedObjects || [];
 
             // Clear symbols
@@ -336,10 +303,12 @@
         }
 
         document.getElementById('btn-retry').addEventListener('click', () => {
-            if (conn && conn.open) {
-                conn.send({ type: 'RESET' });
-                resetGame();
-            }
+            send({ type: 'RESET' });
+            resetGame();
+        });
+
+        document.getElementById('btn-exit').addEventListener('click', () => {
+            send({ type: 'GAME_EXIT' });
         });
 
         // Animation Loop
@@ -365,11 +334,6 @@
                     }
                 }
             }
-
-            // Rotate scene slightly for 3D effect?
-            // gridGroup.rotation.y = Math.sin(Date.now() * 0.0005) * 0.1;
-            // gridGroup.rotation.x = Math.sin(Date.now() * 0.0003) * 0.05;
-
             renderer.render(scene, camera);
         }
         animate();
@@ -381,7 +345,8 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        initNetwork();
+        // Start Game
+        resetGame();
 
     </script>
 </body>

@@ -49,7 +49,7 @@
             border: 1px solid #ff0055;
         }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
         #status-message {
             margin-top: 15px; font-size: 0.8rem; color: #0f0; min-height: 20px;
@@ -62,10 +62,25 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        /* Game Shell Styles */
+        #game-shell {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100;
+        }
+        iframe {
+            width: 100%; height: 100%; border: none;
+        }
+        #btn-exit-game {
+            position: absolute; top: 10px; left: 10px; z-index: 200;
+            width: auto; padding: 10px 20px; font-size: 0.8rem;
+            background: rgba(0,0,0,0.5); border: 1px solid #555; color: #aaa;
+        }
+
     </style>
 </head>
 <body>
 
+    <!-- Main Menu -->
     <div id="main-menu" class="container">
         <h1>ORBIT</h1>
         <p>Co-op Challenge Lobby</p>
@@ -82,6 +97,7 @@
         <button id="btn-join">Join Room</button>
     </div>
 
+    <!-- Lobby Screen -->
     <div id="lobby-screen" class="container hidden">
         <h1>LOBBY</h1>
         <p>Room Code:</p>
@@ -105,30 +121,61 @@
         <p id="client-msg" class="hidden">Waiting for Host to start game...</p>
     </div>
 
+    <!-- Game Shell (Initially Hidden) -->
+    <div id="game-shell" class="hidden">
+        <button id="btn-exit-game" class="hidden">EXIT TO LOBBY</button>
+        <iframe id="game-frame" src="about:blank"></iframe>
+    </div>
+
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script>
         // DOM Elements
         const screens = {
             main: document.getElementById('main-menu'),
-            lobby: document.getElementById('lobby-screen')
+            lobby: document.getElementById('lobby-screen'),
+            game: document.getElementById('game-shell')
         };
         const roomDisplay = document.getElementById('room-display');
         const statusDiv = document.getElementById('connection-status');
         const hostControls = document.getElementById('host-controls');
         const clientMsg = document.getElementById('client-msg');
+        const gameFrame = document.getElementById('game-frame');
+        const btnExit = document.getElementById('btn-exit-game');
 
         // State
         let peer;
         let conn;
         let myRole = null; // 'host' or 'client'
         let roomId = null;
+        let activeGame = null;
 
-        // --- Functions ---
+        // --- Navigation ---
 
         function showScreen(name) {
             Object.values(screens).forEach(s => s.classList.add('hidden'));
             if (screens[name]) screens[name].classList.remove('hidden');
         }
+
+        function loadGame(gameName) {
+            activeGame = gameName;
+            const url = `${gameName}.html?room=${roomId}&role=${myRole}`;
+            gameFrame.src = url;
+            showScreen('game');
+            if (myRole === 'host') btnExit.classList.remove('hidden'); // Only Host can force exit usually, but maybe Client too?
+            // Actually, keep it simple: Host decides game flow.
+            // Client can leave locally but that might break sync.
+            // Let's allow exit for both, which sends 'LEAVE' signal.
+            btnExit.classList.remove('hidden');
+        }
+
+        function unloadGame() {
+            activeGame = null;
+            gameFrame.src = "about:blank";
+            showScreen('lobby');
+            btnExit.classList.add('hidden');
+        }
+
+        // --- PeerJS Logic ---
 
         function initPeer(id = null) {
             peer = new Peer(id);
@@ -165,16 +212,22 @@
                     hostControls.classList.remove('hidden');
                 } else {
                     clientMsg.classList.remove('hidden');
-                    roomDisplay.innerText = roomId; // Client might need to know? Not really, but good for confirmation
+                    roomDisplay.innerText = roomId;
                     showScreen('lobby');
                 }
             });
 
             conn.on('data', (data) => {
-                console.log("Received:", data);
-                if (data.type === 'START') {
-                    // Redirect Client
-                    window.location.href = `${data.game}.html?room=${roomId}&role=client`;
+                // Check if it's a shell command (START game, EXIT game)
+                if (data.type === 'START_GAME') {
+                    loadGame(data.game);
+                } else if (data.type === 'EXIT_GAME') {
+                    unloadGame();
+                } else {
+                    // Otherwise, it's game data intended for the iframe
+                    if (gameFrame.contentWindow) {
+                        gameFrame.contentWindow.postMessage(data, '*');
+                    }
                 }
             });
 
@@ -184,11 +237,27 @@
             });
         }
 
-        // --- Event Listeners ---
+        // --- Iframe Bridge ---
+
+        // Listen for messages FROM the game iframe
+        window.addEventListener('message', (event) => {
+            // Security check if needed, but we trust local origin
+            const data = event.data;
+
+            if (data.type === 'GAME_EXIT') {
+                // Game wants to exit
+                if (myRole === 'host') exitGame(); // Trigger sync exit
+                else unloadGame(); // Just leave locally? Or request Host?
+            } else if (conn && conn.open) {
+                // Forward everything else to peer
+                conn.send(data);
+            }
+        });
+
+        // --- UI Interactions ---
 
         document.getElementById('btn-create').addEventListener('click', () => {
             myRole = 'host';
-            // Generate random 5-char ID
             const id = Math.random().toString(36).substring(2, 7).toUpperCase();
             initPeer(id);
         });
@@ -198,13 +267,13 @@
             if (!inputId) return alert("Please enter a Room Code");
 
             myRole = 'client';
-            roomId = inputId; // Store intended room ID
+            roomId = inputId;
             document.getElementById('btn-join').innerText = "Connecting...";
 
-            // Init as client (no ID needed)
             peer = new Peer();
             peer.on('open', () => {
                 conn = peer.connect(inputId);
+                // We handle connection events in handleConnection same as Host
                 conn.on('open', () => {
                     console.log("Connected to Host");
                     statusDiv.innerHTML = `<span style="color:#0f0">●</span> CONNECTED TO HOST`;
@@ -213,15 +282,18 @@
                     showScreen('lobby');
                 });
                 conn.on('data', (data) => {
-                    if (data.type === 'START') {
-                        window.location.href = `${data.game}.html?room=${roomId}&role=client`;
+                     if (data.type === 'START_GAME') {
+                        loadGame(data.game);
+                    } else if (data.type === 'EXIT_GAME') {
+                        unloadGame();
+                    } else {
+                        if (gameFrame.contentWindow) gameFrame.contentWindow.postMessage(data, '*');
                     }
                 });
                 conn.on('close', () => {
                     alert("Host Disconnected");
                     location.reload();
                 });
-                // Handle connection errors (e.g. ID not found)
                 peer.on('error', (err) => {
                     alert("Could not connect: " + err.type);
                     location.reload();
@@ -229,19 +301,30 @@
             });
         });
 
-        // Host Start Function
+        // Host Functions
         window.startGame = (gameType) => {
             if (conn && conn.open) {
-                conn.send({ type: 'START', game: gameType });
-                // Redirect Host
-                // Give a small delay to ensure message sends? usually PeerJS is fast enough but 100ms is safe
-                setTimeout(() => {
-                    window.location.href = `${gameType}.html?room=${roomId}&role=host`;
-                }, 100);
+                // Send signal to start
+                conn.send({ type: 'START_GAME', game: gameType });
+                // Start locally
+                loadGame(gameType);
             } else {
                 alert("Partner not connected!");
             }
         };
+
+        function exitGame() {
+            if (conn && conn.open) {
+                conn.send({ type: 'EXIT_GAME' });
+            }
+            unloadGame();
+        }
+
+        btnExit.addEventListener('click', () => {
+            if (confirm("Exit to Lobby?")) {
+                exitGame();
+            }
+        });
 
         // Copy Room Code
         roomDisplay.addEventListener('click', () => {

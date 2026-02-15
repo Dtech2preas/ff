@@ -56,8 +56,12 @@
             cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
         }
 
-        #waiting-msg { font-size: 1.2rem; color: #0ff; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        #btn-exit {
+            position: absolute; top: 80px; left: 20px; pointer-events: auto;
+            background: #333; color: #fff; border: 1px solid #555;
+            padding: 8px 12px; font-family: 'Orbitron'; cursor: pointer;
+            z-index: 100; font-size: 0.8rem;
+        }
 
     </style>
 </head>
@@ -74,14 +78,12 @@
             </div>
         </div>
 
+        <button id="btn-exit">EXIT</button>
+
         <div class="controls-layer hidden" id="controls">
             <div class="btn-rotate" id="btn-left">↺</div>
             <div class="btn-action" id="btn-shoot">FIRE</div>
             <div class="btn-rotate" id="btn-right">↻</div>
-        </div>
-
-        <div id="loading-screen" class="screen">
-            <div id="waiting-msg">CONNECTING...</div>
         </div>
 
         <div id="game-over-screen" class="screen hidden">
@@ -91,16 +93,15 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const ROOM_ID = urlParams.get('room');
         const MY_ROLE = urlParams.get('role');
 
-        if (!ROOM_ID || !MY_ROLE) {
-            window.location.href = 'index.html';
+        if (!MY_ROLE) {
+             document.body.innerHTML = "<h1 style='color:white'>Error: No Role Assigned</h1>";
+             throw new Error("No Role");
         }
 
         // State
@@ -111,7 +112,7 @@
 
             // Entities
             turretAngle: 0,
-            shieldAngle: Math.PI, // Opposite side
+            shieldAngle: 0, // 0 means facing +Z (Bottom)
             projectiles: [],
             enemies: [],
 
@@ -120,71 +121,38 @@
             inputShoot: false
         };
 
-        // Network
-        let peer, conn;
-        const PEER_ID = `${ROOM_ID}-defense`;
+        // Network Bridge
+        function send(data) {
+            window.parent.postMessage(data, '*');
+        }
 
-        function initNetwork() {
-            if (MY_ROLE === 'host') {
-                peer = new Peer(PEER_ID);
-                peer.on('open', (id) => {
-                    console.log("Host Ready:", id);
-                    document.getElementById('waiting-msg').innerText = "WAITING FOR P2...";
-                });
-                peer.on('connection', (c) => handleConnection(c));
-                peer.on('error', (err) => {
-                    if (err.type === 'unavailable-id') {
-                        alert("Session invalid. Please create new room.");
-                        window.location.href = 'index.html';
-                    }
-                });
-            } else {
-                peer = new Peer();
-                peer.on('open', () => {
-                    conn = peer.connect(PEER_ID);
-                    handleConnection(conn);
-                });
-                peer.on('error', (err) => {
-                     console.error(err);
-                     alert("Connection Failed: " + err.type);
-                });
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data.type === 'STATE' && MY_ROLE === 'client') {
+                // Sync state
+                state.coreHP = data.coreHP;
+                state.wave = data.wave;
+                state.turretAngle = data.turretAngle;
+                state.shieldAngle = data.shieldAngle;
+                state.enemies = data.enemies;
+                state.projectiles = data.projectiles;
+                state.playing = data.playing;
+
+                updateUI();
+                if (!state.playing) endGame(state.wave);
+            } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
+                // Client is Shield
+                state.inputRotate = data.rotate;
+            } else if (data.type === 'RESTART') {
+                resetGame();
+                startGame();
             }
-        }
+        });
 
-        function handleConnection(connection) {
-            conn = connection;
-            conn.on('open', () => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('controls').classList.remove('hidden');
-                updateRoleUI();
-                if (MY_ROLE === 'host') startGame();
-            });
-            conn.on('data', (data) => {
-                if (data.type === 'STATE' && MY_ROLE === 'client') {
-                    // Sync state
-                    state.coreHP = data.coreHP;
-                    state.wave = data.wave;
-                    state.turretAngle = data.turretAngle;
-                    state.shieldAngle = data.shieldAngle;
-                    state.enemies = data.enemies;
-                    state.projectiles = data.projectiles;
-                    state.playing = data.playing;
-
-                    updateUI();
-                    if (!state.playing) endGame(state.wave);
-                } else if (data.type === 'INPUT' && MY_ROLE === 'host') {
-                    // Client is Shield
-                    state.inputRotate = data.rotate;
-                } else if (data.type === 'RESTART') {
-                    resetGame();
-                    startGame();
-                }
-            });
-            conn.on('close', () => {
-                alert("Partner Disconnected");
-                window.location.href = 'index.html';
-            });
-        }
+        // Initialize
+        document.getElementById('controls').classList.remove('hidden');
+        updateRoleUI();
+        if (MY_ROLE === 'host') startGame();
 
         function updateRoleUI() {
             const isGunner = (MY_ROLE === 'host');
@@ -201,6 +169,7 @@
 
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
         camera.position.set(0, 30, 0); // Top down
+        camera.up.set(0, 0, -1); // Set Top of screen to be -Z
         camera.lookAt(0, 0, 0);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -231,7 +200,8 @@
         const shieldGeo = new THREE.TorusGeometry(5, 0.2, 8, 24, Math.PI / 2); // Quarter circle
         const shieldMat = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const shield = new THREE.Mesh(shieldGeo, shieldMat);
-        shield.rotation.x = Math.PI / 2;
+        // Default Torus is in XY plane.
+        // We will rotate it in render loop.
         scene.add(shield);
 
         // Enemy & Projectile Groups
@@ -265,8 +235,6 @@
         const btnRight = document.getElementById('btn-right');
         const btnShoot = document.getElementById('btn-shoot');
 
-        // Continuous rotation for smooth control? Or discrete steps?
-        // Let's do continuous while holding for rotation.
         let rotateInterval;
 
         function startRotate(dir) {
@@ -277,15 +245,15 @@
                     state.turretAngle += dir * 0.1;
                 } else {
                     // Client sends rotate command
-                    if (conn && conn.open) conn.send({ type: 'INPUT', rotate: dir });
+                    send({ type: 'INPUT', rotate: dir });
                 }
             }, 50);
         }
 
         function stopRotate() {
             if (rotateInterval) clearInterval(rotateInterval);
-            if (MY_ROLE !== 'host' && conn && conn.open) {
-                conn.send({ type: 'INPUT', rotate: 0 }); // Stop
+            if (MY_ROLE !== 'host') {
+                send({ type: 'INPUT', rotate: 0 }); // Stop
             }
         }
 
@@ -305,30 +273,28 @@
 
         document.getElementById('btn-retry').addEventListener('click', () => {
             if (MY_ROLE === 'host') {
-                conn.send({ type: 'RESTART' });
+                send({ type: 'RESTART' });
                 resetGame();
                 startGame();
             }
         });
 
+        document.getElementById('btn-exit').addEventListener('click', () => {
+             send({ type: 'GAME_EXIT' });
+        });
+
         // Game Logic (Host Only)
         function spawnProjectile() {
             const speed = 0.5;
-            const vx = Math.sin(state.turretAngle) * speed; // 0 angle = +Z?
-            // Turret geometry is length 3 along Z.
-            // If angle 0, points +Z?
-            // We rotated box. Default box is along Z?
-            // Let's assume Angle 0 is +Z.
-            // sin(0)=0, cos(0)=1. So Z should be cos.
-
+            // Turret angle 0 = +Z (Bottom).
+            const vx = Math.sin(state.turretAngle) * speed;
             const vz = Math.cos(state.turretAngle) * speed;
-            const vx_actual = Math.sin(state.turretAngle) * speed;
 
             state.projectiles.push({
                 id: Math.random().toString(36),
                 x: 0,
                 z: 0,
-                vx: vx_actual,
+                vx: vx,
                 vz: vz
             });
         }
@@ -339,6 +305,8 @@
             state.wave = 1;
             state.enemies = [];
             state.projectiles = [];
+            state.shieldAngle = 0;
+            state.turretAngle = 0;
 
             document.getElementById('game-over-screen').classList.add('hidden');
             updateUI();
@@ -376,6 +344,7 @@
             if (Math.random() < 0.02 * state.wave) {
                 const angle = Math.random() * Math.PI * 2;
                 const dist = 20;
+                // angle 0 = +Z (Bottom) to match other logic
                 state.enemies.push({
                     id: Math.random().toString(36),
                     x: Math.sin(angle) * dist,
@@ -399,17 +368,16 @@
             for (let i = state.enemies.length - 1; i >= 0; i--) {
                 const e = state.enemies[i];
                 // Move towards 0,0
-                const angle = Math.atan2(e.x, e.z); // Note: atan2(y, x). Here x=x, y=z.
-                // Wait, atan2(y, x) -> atan2(x, z) gives angle from Z axis?
-                // Let's just normalize vector.
                 const dist = Math.sqrt(e.x*e.x + e.z*e.z);
-                e.x -= (e.x / dist) * e.speed;
-                e.z -= (e.z / dist) * e.speed;
+                if (dist > 0.1) {
+                    e.x -= (e.x / dist) * e.speed;
+                    e.z -= (e.z / dist) * e.speed;
+                }
 
                 // Check collision with Shield
                 // Shield is at distance 5. Arc is PI/2 wide.
                 if (dist < 5.5 && dist > 4.5) {
-                    const enemyAngle = Math.atan2(e.x, e.z); // -PI to PI
+                    const enemyAngle = Math.atan2(e.x, e.z); // -PI to PI. x=sin, z=cos. Matches our logic.
                     // Normalize angles
                     let diff = enemyAngle - state.shieldAngle;
                     // Wrap diff to -PI, PI
@@ -447,18 +415,16 @@
             }
 
             // Sync
-            if (conn && conn.open) {
-                conn.send({
-                    type: 'STATE',
-                    coreHP: state.coreHP,
-                    wave: state.wave,
-                    turretAngle: state.turretAngle,
-                    shieldAngle: state.shieldAngle,
-                    enemies: state.enemies,
-                    projectiles: state.projectiles,
-                    playing: state.playing
-                });
-            }
+            send({
+                type: 'STATE',
+                coreHP: state.coreHP,
+                wave: state.wave,
+                turretAngle: state.turretAngle,
+                shieldAngle: state.shieldAngle,
+                enemies: state.enemies,
+                projectiles: state.projectiles,
+                playing: state.playing
+            });
         }
 
         function render() {
@@ -466,12 +432,22 @@
 
             // Render Static Objects
             turret.rotation.y = state.turretAngle;
-            shield.rotation.z = -state.shieldAngle; // Rotate around Z axis because geometry is rotated X?
-            // Geometry was: Torus radius 5, rotated X=PI/2.
-            // So it lies flat on XZ plane.
-            // Rotation around Y axis rotates it around core.
-            shield.rotation.y = state.shieldAngle;
-            shield.rotation.x = Math.PI / 2; // Keep flat
+
+            // Correct visual rotation for shield
+            // Torus default: XY plane.
+            // We rotate X by 90 to make it flat (XZ plane).
+            // This aligns +X (mesh 0 angle) to +X in world.
+            // But logic 0 is +Z (Bottom).
+            // Mesh starts at +X (Right).
+            // To align Mesh 0 to Logic 0, we rotate Y by -90 (-PI/2).
+            // Now Mesh 0 is at +Z.
+            // But logic assumes Shield Center is at `shieldAngle`.
+            // Mesh is arc from 0 to 90. Center is 45.
+            // So we need to rotate back by 45 (-PI/4).
+            // Total offset: -PI/2 - PI/4 = -3PI/4.
+
+            shield.rotation.x = Math.PI / 2;
+            shield.rotation.y = state.shieldAngle - (3 * Math.PI / 4);
             shield.rotation.z = 0;
 
             // Sync Groups
@@ -510,8 +486,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        initNetwork();
 
     </script>
 </body>
