@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORBIT: Game Lobby</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Reset & Base */
+        * { box-sizing: border-box; touch-action: none; }
+        body {
+            margin: 0; overflow: hidden; background: #000; color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000 100%);
+        }
+
+        .container {
+            width: 90%; max-width: 400px; text-align: center;
+            padding: 2rem; border: 2px solid #00ffff; border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            background: rgba(10, 10, 20, 0.9);
+            transition: opacity 0.5s ease;
+        }
+
+        h1 { margin: 0 0 20px; font-size: 2.5rem; text-shadow: 0 0 10px #0ff; color: #fff; letter-spacing: 2px; }
+        p { color: #aaa; margin-bottom: 30px; font-size: 0.9rem; }
+
+        .input-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 0.8rem; color: #0ff; margin-bottom: 5px; }
+        input {
+            width: 100%; padding: 12px; background: #111; border: 1px solid #333;
+            color: #fff; font-family: 'Orbitron', sans-serif; font-size: 1.1rem;
+            text-align: center; border-radius: 5px; outline: none; transition: border 0.3s;
+        }
+        input:focus { border-color: #f0f; box-shadow: 0 0 10px rgba(255, 0, 255, 0.5); }
+
+        button {
+            width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #0088ff);
+            border: none; color: #000; font-family: 'Orbitron', sans-serif; font-weight: bold;
+            font-size: 1.1rem; cursor: pointer; border-radius: 5px; text-transform: uppercase;
+            margin-top: 10px; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:active { transform: scale(0.98); }
+        button:disabled { background: #333; color: #555; cursor: not-allowed; }
+
+        button.game-btn {
+            background: linear-gradient(45deg, #ff0055, #ff00aa); color: #fff; margin-top: 15px;
+            border: 1px solid #ff0055;
+        }
+
+        .hidden { display: none !important; }
+
+        #status-message {
+            margin-top: 15px; font-size: 0.8rem; color: #0f0; min-height: 20px;
+        }
+
+        .loader {
+            border: 3px solid #333; border-top: 3px solid #0ff; border-radius: 50%;
+            width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block;
+            vertical-align: middle; margin-right: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Game Shell Styles */
+        #game-shell {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 100;
+        }
+        iframe {
+            width: 100%; height: 100%; border: none;
+        }
+        #btn-exit-game {
+            position: absolute; top: 10px; left: 10px; z-index: 200;
+            width: auto; padding: 10px 20px; font-size: 0.8rem;
+            background: rgba(0,0,0,0.5); border: 1px solid #555; color: #aaa;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Main Menu -->
+    <div id="main-menu" class="container">
+        <h1>ORBIT</h1>
+        <p>Co-op Challenge Lobby</p>
+
+        <button id="btn-create">Create Room</button>
+
+        <div style="margin: 20px 0; border-top: 1px solid #333; position: relative;">
+            <span style="background: #0a0a14; padding: 0 10px; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); color: #555; font-size: 0.8rem;">OR</span>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="room-input" placeholder="Enter Host IP (e.g. 192.168.x.x)">
+        </div>
+        <button id="btn-join">Join Room</button>
+    </div>
+
+    <!-- Lobby Screen -->
+    <div id="lobby-screen" class="container hidden">
+        <h1>LOBBY</h1>
+        <p>Host IP Address:</p>
+        <h2 id="room-display" style="font-size: 2.0rem; color: #0ff; margin: 10px 0; letter-spacing: 2px; cursor: pointer;" title="Click to Copy">---</h2>
+
+        <div id="connection-status" style="margin: 20px 0; color: #aaa;">
+            <div class="loader"></div> Waiting for Player 2...
+        </div>
+
+        <div id="host-controls" class="hidden">
+            <p style="color: #fff; margin-bottom: 10px;">Select Game Mode:</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="game-btn" onclick="startGame('tunnel')">TUNNEL RUN<br><span style="font-size: 0.7rem; opacity: 0.8;">(Co-op)</span></button>
+                <button class="game-btn" onclick="startGame('grid')">GRID DODGE<br><span style="font-size: 0.7rem; opacity: 0.8;">(Co-op)</span></button>
+                <button class="game-btn" onclick="startGame('defense')">CORE DEFENSE<br><span style="font-size: 0.7rem; opacity: 0.8;">(Co-op)</span></button>
+                <button class="game-btn" onclick="startGame('shooter')">SPACE DUEL<br><span style="font-size: 0.7rem; opacity: 0.8;">(PvP)</span></button>
+                <button class="game-btn" onclick="startGame('tictactoe')" style="grid-column: span 2;">TIC-TAC-TOE<br><span style="font-size: 0.7rem; opacity: 0.8;">(PvP Strategy)</span></button>
+            </div>
+        </div>
+
+        <p id="client-msg" class="hidden">Waiting for Host to start game...</p>
+    </div>
+
+    <!-- Game Shell (Initially Hidden) -->
+    <div id="game-shell" class="hidden">
+        <button id="btn-exit-game" class="hidden">EXIT TO LOBBY</button>
+        <iframe id="game-frame" src="about:blank"></iframe>
+    </div>
+
+
+    <script>
+        // DOM Elements
+        const screens = {
+            main: document.getElementById('main-menu'),
+            lobby: document.getElementById('lobby-screen'),
+            game: document.getElementById('game-shell')
+        };
+        const roomDisplay = document.getElementById('room-display');
+        const statusDiv = document.getElementById('connection-status');
+        const hostControls = document.getElementById('host-controls');
+        const clientMsg = document.getElementById('client-msg');
+        const gameFrame = document.getElementById('game-frame');
+        const btnExit = document.getElementById('btn-exit-game');
+
+        // State
+        let ws;
+        let myRole = null; // 'host' or 'client'
+        let hostIp = null;
+        let activeGame = null;
+
+        // --- Navigation ---
+
+        function showScreen(name) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            if (screens[name]) screens[name].classList.remove('hidden');
+        }
+
+        function loadGame(gameName) {
+            activeGame = gameName;
+            const url = `${gameName}.html?ip=${hostIp}&role=${myRole}`;
+            gameFrame.src = url;
+            showScreen('game');
+            if (myRole === 'host') btnExit.classList.remove('hidden'); // Only Host can force exit usually, but maybe Client too?
+            // Actually, keep it simple: Host decides game flow.
+            // Client can leave locally but that might break sync.
+            // Let's allow exit for both, which sends 'LEAVE' signal.
+            btnExit.classList.remove('hidden');
+        }
+
+        function unloadGame() {
+            activeGame = null;
+            gameFrame.src = "about:blank";
+            showScreen('lobby');
+            btnExit.classList.add('hidden');
+        }
+
+        // --- WebSocket Logic ---
+
+        function connectWebSocket(ip) {
+            ws = new WebSocket(`ws://${ip}:8080`);
+
+            ws.onopen = () => {
+                console.log("WebSocket connected to " + ip);
+                if (myRole === 'host') {
+                    roomDisplay.innerText = ip;
+                    showScreen('lobby');
+                } else {
+                    statusDiv.innerHTML = `<span style="color:#0f0">●</span> CONNECTED TO HOST`;
+                    clientMsg.classList.remove('hidden');
+                    roomDisplay.innerText = ip;
+                    showScreen('lobby');
+                }
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                // If Host receives a join message from client
+                if (myRole === 'host' && data.type === 'CLIENT_JOINED') {
+                    console.log("Player 2 joined");
+                    statusDiv.innerHTML = `<span style="color:#0f0">●</span> PLAYER 2 CONNECTED`;
+                    hostControls.classList.remove('hidden');
+                    return;
+                }
+
+                if (data.type === 'START_GAME') {
+                    loadGame(data.game);
+                } else if (data.type === 'EXIT_GAME') {
+                    unloadGame();
+                } else {
+                    if (gameFrame.contentWindow) {
+                        gameFrame.contentWindow.postMessage(data, '*');
+                    }
+                }
+            };
+
+            ws.onclose = () => {
+                alert("Disconnected!");
+                location.reload();
+            };
+
+            ws.onerror = (err) => {
+                console.error("WS Error", err);
+                if (myRole === 'client') {
+                    alert("Could not connect to host.");
+                    location.reload();
+                }
+            };
+        }
+
+        // --- Iframe Bridge ---
+
+        // Listen for messages FROM the game iframe
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data.type === 'GAME_EXIT') {
+                if (myRole === 'host') exitGame();
+                else unloadGame();
+            } else if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(data));
+            }
+        });
+
+        // --- UI Interactions ---
+
+        document.getElementById('btn-create').addEventListener('click', () => {
+            myRole = 'host';
+            if (window.AndroidBridge) {
+                window.AndroidBridge.startLocalServer();
+                hostIp = window.AndroidBridge.getLocalIpAddress();
+                // Wait briefly for server to start before connecting
+                setTimeout(() => connectWebSocket("127.0.0.1"), 500);
+            } else {
+                alert("Android Bridge not found. Cannot start local server.");
+            }
+        });
+
+        document.getElementById('btn-join').addEventListener('click', () => {
+            const inputIp = document.getElementById('room-input').value.trim();
+            if (!inputIp) return alert("Please enter the Host IP");
+
+            myRole = 'client';
+            hostIp = inputIp;
+            document.getElementById('btn-join').innerText = "Connecting...";
+
+            connectWebSocket(inputIp);
+
+            // Send join ping once connected
+            setTimeout(() => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'CLIENT_JOINED' }));
+                }
+            }, 1000);
+        });
+
+        // Host Functions
+        window.startGame = (gameType) => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'START_GAME', game: gameType }));
+                loadGame(gameType);
+            } else {
+                alert("Partner not connected or WS not ready!");
+            }
+        };
+
+        function exitGame() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'EXIT_GAME' }));
+            }
+            unloadGame();
+        }
+
+        btnExit.addEventListener('click', () => {
+            if (confirm("Exit to Lobby?")) {
+                exitGame();
+            }
+        });
+
+        // Copy IP Code
+        roomDisplay.addEventListener('click', () => {
+            const displayIp = myRole === 'host' && window.AndroidBridge ? window.AndroidBridge.getLocalIpAddress() : hostIp;
+            navigator.clipboard.writeText(displayIp).then(() => {
+                const original = roomDisplay.style.color;
+                roomDisplay.style.color = "#fff";
+                setTimeout(() => roomDisplay.style.color = original, 200);
+            });
+        });
+
+    </script>
+</body>
+</html>
